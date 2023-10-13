@@ -1,4 +1,4 @@
-package com.realestate.model.user;
+package com.realestate.dto;
 
 import lombok.Getter;
 import lombok.Setter;

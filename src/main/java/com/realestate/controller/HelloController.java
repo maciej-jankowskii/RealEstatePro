@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @GetMapping
+    @GetMapping("/security")
     public String hello(){
-        return "Hello JWT";
+        return "Only for Employees";
     }
 }

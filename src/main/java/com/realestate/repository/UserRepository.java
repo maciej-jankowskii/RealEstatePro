@@ -1,5 +1,6 @@
-package com.realestate.model.user;
+package com.realestate.repository;
 
+import com.realestate.model.user.UserEmployee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

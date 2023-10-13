@@ -2,7 +2,7 @@ package com.realestate.config;
 
 import com.realestate.model.user.Role;
 import com.realestate.model.user.UserEmployee;
-import com.realestate.model.user.UserRepository;
+import com.realestate.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

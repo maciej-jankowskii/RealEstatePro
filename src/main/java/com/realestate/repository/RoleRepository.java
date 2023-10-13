@@ -1,5 +1,6 @@
-package com.realestate.model.user;
+package com.realestate.repository;
 
+import com.realestate.model.user.Role;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
