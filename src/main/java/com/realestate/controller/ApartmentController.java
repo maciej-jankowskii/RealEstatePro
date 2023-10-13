@@ -28,7 +28,9 @@ public class ApartmentController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<ApartmentPropertyDto> getApartmentById(@PathVariable Long id){
-        return apartmentService.getCompanyById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return apartmentService.getCompanyById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
 
