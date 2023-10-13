@@ -10,6 +10,7 @@ import com.realestate.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,11 +62,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        String token = jwtGenerator.generatedToken(authenticate);
-        return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
+        try {
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
+            String token = jwtGenerator.generatedToken(authenticate);
+            return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
+        } catch (BadCredentialsException ex){
+            AuthResponseDto responseDto = new AuthResponseDto(null);
+            responseDto.setErrorMessage("Invalid e-mail or password");
+            return new ResponseEntity<>(responseDto, HttpStatus.UNAUTHORIZED);
+        }
 
     }
 
