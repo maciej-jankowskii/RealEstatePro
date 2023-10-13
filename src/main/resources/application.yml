@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/realestate
+    username: root
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
