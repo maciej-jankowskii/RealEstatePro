@@ -29,7 +29,7 @@ public class ApartmentService {
         return apartmentMapper.map(saved);
     }
 
-    public Optional<ApartmentPropertyDto> getCompanyById(Long id){
+    public Optional<ApartmentPropertyDto> getApartmentById(Long id){
         return apartmentRepository.findById(id).map(apartmentMapper::map);
     }
 
@@ -37,5 +37,10 @@ public class ApartmentService {
         List<Apartment> apartments = (List<Apartment>) apartmentRepository.findAll();
         List<ApartmentPropertyDto> dtos = apartments.stream().map(apartmentMapper::map).collect(Collectors.toList());
         return dtos;
+    }
+
+    public void updateApartment(ApartmentPropertyDto dto){
+        Apartment apartment = apartmentMapper.map(dto);
+        apartmentRepository.save(apartment);
     }
 }
