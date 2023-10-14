@@ -2,6 +2,7 @@ package com.realestate.controller;
 
 import com.realestate.dto.CommercialPropertyDto;
 import com.realestate.service.CommercialService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,7 +19,7 @@ public class CommercialPropertyController {
     }
 
     @PostMapping
-    public ResponseEntity<CommercialPropertyDto> saveCommercialProperty(@RequestBody CommercialPropertyDto dto){
+    public ResponseEntity<CommercialPropertyDto> saveCommercialProperty(@Valid @RequestBody CommercialPropertyDto dto){
         CommercialPropertyDto saved = commercialService.saveCommercialProperty(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

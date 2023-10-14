@@ -7,6 +7,7 @@ import com.realestate.dto.RegisterDto;
 import com.realestate.model.user.*;
 import com.realestate.repository.RoleRepository;
 import com.realestate.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,12 +15,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -40,7 +42,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto){
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterDto registerDto){
         if (userRepository.existsByEmail(registerDto.getEmail())){
             return new ResponseEntity<>("Email is taken!", HttpStatus.BAD_REQUEST);
         }
@@ -67,8 +69,4 @@ public class AuthController {
         return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
 
     }
-
-
-
-
 }

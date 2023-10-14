@@ -2,6 +2,7 @@ package com.realestate.controller;
 
 import com.realestate.dto.LandPropertyDto;
 import com.realestate.service.LandService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,7 +20,7 @@ public class LandController {
     }
 
     @PostMapping
-    public ResponseEntity<LandPropertyDto> saveLandProperty(@RequestBody LandPropertyDto dto){
+    public ResponseEntity<LandPropertyDto> saveLandProperty(@Valid @RequestBody LandPropertyDto dto){
         LandPropertyDto saved = landService.saveLand(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

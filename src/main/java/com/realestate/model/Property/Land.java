@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,7 @@ import lombok.Setter;
 public class Land extends Property{
     @Enumerated(EnumType.STRING)
     private TypeOfLand typeOfLand;
+    @NotNull
     private Double area;
     private Boolean buildingPermit;
 

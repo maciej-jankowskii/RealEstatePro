@@ -1,6 +1,8 @@
 package com.realestate.model.Property;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,9 +18,13 @@ public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     private String address;
+    @NotNull
+    @Min(1)
     private BigDecimal price;
     private String description;
+    @NotNull
     private Boolean available;
     private Boolean booked;
 }

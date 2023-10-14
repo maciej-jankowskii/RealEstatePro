@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +16,8 @@ import lombok.Setter;
 @Setter
 @Table(name = "apartment")
 public class Apartment extends Property {
+    @NotNull
+    @Min(1)
     private Double area;
     private Integer rooms;
     private Integer bathrooms;
