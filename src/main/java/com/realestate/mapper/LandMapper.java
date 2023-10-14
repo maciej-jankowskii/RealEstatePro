@@ -14,8 +14,6 @@ public class LandMapper {
         dto.setAddress(land.getAddress());
         dto.setPrice(land.getPrice());
         dto.setDescription(land.getDescription());
-        dto.setAvailable(land.getAvailable());
-        dto.setBooked(land.getBooked());
         dto.setTypeOfLand(String.valueOf(land.getTypeOfLand()));
         dto.setArea(land.getArea());
         dto.setBuildingPermit(land.getBuildingPermit());
@@ -27,8 +25,6 @@ public class LandMapper {
         land.setAddress(dto.getAddress());
         land.setPrice(dto.getPrice());
         land.setDescription(dto.getDescription());
-        land.setAvailable(dto.getAvailable());
-        land.setBooked(dto.getBooked());
         land.setTypeOfLand(TypeOfLand.valueOf(dto.getTypeOfLand()));
         land.setArea(dto.getArea());
         land.setBuildingPermit(dto.getBuildingPermit());

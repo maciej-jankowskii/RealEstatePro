@@ -14,8 +14,6 @@ public class ApartmentMapper {
         dto.setAddress(apartment.getAddress());
         dto.setPrice(apartment.getPrice());
         dto.setDescription(apartment.getDescription());
-        dto.setAvailable(apartment.getAvailable());
-        dto.setBooked(apartment.getBooked());
         dto.setArea(apartment.getArea());
         dto.setRooms(apartment.getRooms());
         dto.setBathrooms(apartment.getBathrooms());
@@ -36,8 +34,6 @@ public class ApartmentMapper {
         apartment.setAddress(dto.getAddress());
         apartment.setPrice(dto.getPrice());
         apartment.setDescription(dto.getDescription());
-        apartment.setAvailable(dto.getAvailable());
-        apartment.setBooked(dto.getBooked());
         apartment.setArea(dto.getArea());
         apartment.setRooms(dto.getRooms());
         apartment.setBathrooms(dto.getBathrooms());

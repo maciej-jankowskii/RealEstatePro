@@ -12,6 +12,4 @@ public class PropertyDto {
     private String address;
     private BigDecimal price;
     private String description;
-    private Boolean available;
-    private Boolean booked;
 }

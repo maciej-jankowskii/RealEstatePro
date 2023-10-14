@@ -1,10 +1,5 @@
 package com.realestate.dto;
 
-import com.realestate.model.Property.Property;
-import com.realestate.model.client.Client;
-import com.realestate.model.reservation.Reservation;
-import com.realestate.model.user.UserEmployee;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,5 +10,6 @@ public class OfferDto {
     private Long userId;
     private Long clientId;
     private Long propertyId;
-    private Long reservationId;
+    private Boolean isBooked;
+    private Boolean isAvailable;
 }

@@ -15,8 +15,6 @@ public class CommercialMapper {
         dto.setAddress(commercialProperty.getAddress());
         dto.setPrice(commercialProperty.getPrice());
         dto.setDescription(commercialProperty.getDescription());
-        dto.setAvailable(commercialProperty.getAvailable());
-        dto.setBooked(commercialProperty.getBooked());
         dto.setArea(commercialProperty.getArea());
         dto.setRooms(commercialProperty.getRooms());
         dto.setBathrooms(commercialProperty.getBathrooms());
@@ -32,8 +30,6 @@ public class CommercialMapper {
         commercialProperty.setAddress(dto.getAddress());
         commercialProperty.setPrice(dto.getPrice());
         commercialProperty.setDescription(dto.getDescription());
-        commercialProperty.setAvailable(dto.getAvailable());
-        commercialProperty.setBooked(dto.getBooked());
         commercialProperty.setArea(dto.getArea());
         commercialProperty.setRooms(dto.getRooms());
         commercialProperty.setBathrooms(dto.getBathrooms());

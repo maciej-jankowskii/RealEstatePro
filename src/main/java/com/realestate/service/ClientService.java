@@ -41,12 +41,6 @@ public class ClientService {
         return dtos;
     }
 
-//    public List<OfferDto> getOffersByClient(Long clientId){
-//        List<Offer> offers = offersRepository.findAllByClient_Id(clientId);
-//        List<OfferDto> dtos = offers.stream().map(offerMapper::map).collect(Collectors.toList());
-//        return dtos;
-//    }   !!!!!!    TO MA BYĆ DO SERWISU OFERTY !!!!!
-
     @Transactional
     public ClientDto saveClient(ClientDto clientDto){
         Client client = clientMapper.map(clientDto);

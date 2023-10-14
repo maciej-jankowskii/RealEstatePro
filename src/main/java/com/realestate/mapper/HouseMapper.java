@@ -15,8 +15,6 @@ public class HouseMapper {
         dto.setAddress(house.getAddress());
         dto.setPrice(house.getPrice());
         dto.setDescription(house.getDescription());
-        dto.setAvailable(house.getAvailable());
-        dto.setBooked(house.getBooked());
         dto.setLandArea(house.getLandArea());
         dto.setHouseArea(house.getHouseArea());
         dto.setRooms(house.getRooms());
@@ -36,8 +34,6 @@ public class HouseMapper {
         house.setAddress(dto.getAddress());
         house.setPrice(dto.getPrice());
         house.setDescription(dto.getDescription());
-        house.setAvailable(dto.getAvailable());
-        house.setBooked(dto.getBooked());
         house.setLandArea(dto.getLandArea());
         house.setHouseArea(dto.getHouseArea());
         house.setRooms(dto.getRooms());

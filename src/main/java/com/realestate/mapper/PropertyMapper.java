@@ -13,8 +13,6 @@ public class PropertyMapper {
         dto.setAddress(property.getAddress());
         dto.setPrice(property.getPrice());
         dto.setDescription(property.getDescription());
-        dto.setAvailable(property.getAvailable());
-        dto.setBooked(property.getBooked());
         return dto;
     }
 
@@ -24,8 +22,6 @@ public class PropertyMapper {
         property.setAddress(propertyDto.getAddress());
         property.setPrice(propertyDto.getPrice());
         property.setDescription(propertyDto.getDescription());
-        property.setAvailable(propertyDto.getAvailable());
-        property.setBooked(propertyDto.getBooked());
         return property;
 
     }

@@ -24,7 +24,4 @@ public class Property {
     @Min(1)
     private BigDecimal price;
     private String description;
-    @NotNull
-    private Boolean available;
-    private Boolean booked;
 }
