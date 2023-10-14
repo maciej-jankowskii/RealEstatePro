@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/commercial")
@@ -32,6 +33,15 @@ public class CommercialPropertyController {
         return commercialService.getCommercialPropertyById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<CommercialPropertyDto>> getAllCommercial(){
+        List<CommercialPropertyDto> allCommercial = commercialService.getAllCommercialProperty();
+        if (allCommercial.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(allCommercial);
     }
 
 }

@@ -7,7 +7,9 @@ import com.realestate.repository.HouseRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HouseService {
@@ -29,5 +31,11 @@ public class HouseService {
 
     public Optional<HousePropertyDto> getHouseById(Long id){
         return houseRepository.findById(id).map(houseMapper::map);
+    }
+
+    public List<HousePropertyDto> getAllHouses(){
+        List<House> allHouses = (List<House>) houseRepository.findAll();
+        List<HousePropertyDto> dtos = allHouses.stream().map(houseMapper::map).collect(Collectors.toList());
+        return dtos;
     }
 }

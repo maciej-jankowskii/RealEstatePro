@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/land")
@@ -32,5 +33,13 @@ public class LandController {
     @GetMapping("/{id}")
     public ResponseEntity<LandPropertyDto> getLandById(@PathVariable Long id){
         return landService.getLandById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/getAll")
+    public ResponseEntity<List<LandPropertyDto>> getAllLands(){
+        List<LandPropertyDto> allLands = landService.getAllLands();
+        if (allLands.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(allLands);
     }
 }

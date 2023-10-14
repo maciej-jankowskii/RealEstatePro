@@ -7,7 +7,9 @@ import com.realestate.repository.ApartmentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ApartmentService {
@@ -29,5 +31,11 @@ public class ApartmentService {
 
     public Optional<ApartmentPropertyDto> getCompanyById(Long id){
         return apartmentRepository.findById(id).map(apartmentMapper::map);
+    }
+
+    public List<ApartmentPropertyDto> getAllApartments(){
+        List<Apartment> apartments = (List<Apartment>) apartmentRepository.findAll();
+        List<ApartmentPropertyDto> dtos = apartments.stream().map(apartmentMapper::map).collect(Collectors.toList());
+        return dtos;
     }
 }

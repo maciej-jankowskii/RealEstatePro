@@ -7,7 +7,9 @@ import com.realestate.repository.LandRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LandService {
@@ -29,5 +31,11 @@ public class LandService {
 
     public Optional<LandPropertyDto> getLandById(Long id){
         return landRepository.findById(id).map(landMapper::map);
+    }
+
+    public List<LandPropertyDto> getAllLands(){
+        List<Land> allLands = (List<Land>) landRepository.findAll();
+        List<LandPropertyDto> dtos = allLands.stream().map(landMapper::map).collect(Collectors.toList());
+        return dtos;
     }
 }

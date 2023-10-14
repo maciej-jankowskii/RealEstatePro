@@ -7,7 +7,9 @@ import com.realestate.repository.CommercialRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommercialService {
@@ -28,5 +30,11 @@ public class CommercialService {
 
     public Optional<CommercialPropertyDto> getCommercialPropertyById(Long id){
         return commercialRepository.findById(id).map(commercialMapper::map);
+    }
+
+    public List<CommercialPropertyDto> getAllCommercialProperty(){
+        List<CommercialProperty> allCommercial = (List<CommercialProperty>) commercialRepository.findAll();
+        List<CommercialPropertyDto> dtos = allCommercial.stream().map(commercialMapper::map).collect(Collectors.toList());
+        return dtos;
     }
 }
