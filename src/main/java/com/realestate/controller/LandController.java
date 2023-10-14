@@ -66,6 +66,12 @@ public class LandController {
 
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteLand(@PathVariable Long id){
+        landService.deleteLand(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private LandPropertyDto applyPatch(LandPropertyDto dto, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
         JsonNode landNode = objectMapper.valueToTree(dto);
         JsonNode patchedLand = patch.apply(landNode);

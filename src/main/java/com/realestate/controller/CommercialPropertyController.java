@@ -67,6 +67,12 @@ public class CommercialPropertyController {
 
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCommercialProperty(@PathVariable Long id){
+        commercialService.deleteCommercialProperty(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private CommercialPropertyDto applyPatch(CommercialPropertyDto dto, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
         JsonNode commercialNode = objectMapper.valueToTree(dto);
         JsonNode commercialPatchedNode = patch.apply(commercialNode);

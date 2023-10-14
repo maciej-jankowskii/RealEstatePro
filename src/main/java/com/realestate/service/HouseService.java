@@ -44,4 +44,8 @@ public class HouseService {
         House house = houseMapper.map(dto);
         houseRepository.save(house);
     }
+
+    public void deleteHouse(Long id){
+        houseRepository.deleteById(id);
+    }
 }

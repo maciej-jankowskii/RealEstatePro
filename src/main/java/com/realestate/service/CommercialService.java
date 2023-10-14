@@ -42,4 +42,8 @@ public class CommercialService {
         CommercialProperty commercialProperty = commercialMapper.map(dto);
         commercialRepository.save(commercialProperty);
     }
+
+    public void deleteCommercialProperty(Long id){
+        commercialRepository.deleteById(id);
+    }
 }

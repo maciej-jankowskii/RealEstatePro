@@ -66,6 +66,12 @@ public class ApartmentController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> deleteApartment(@PathVariable Long id){
+        apartmentService.deleteApartment(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private ApartmentPropertyDto applyPatch(ApartmentPropertyDto dto, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
         JsonNode apartmentNode = objectMapper.valueToTree(dto);
         JsonNode apartmentPatchedNode = patch.apply(apartmentNode);

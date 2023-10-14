@@ -43,4 +43,8 @@ public class ApartmentService {
         Apartment apartment = apartmentMapper.map(dto);
         apartmentRepository.save(apartment);
     }
+
+    public void deleteApartment(Long id){
+        apartmentRepository.deleteById(id);
+    }
 }

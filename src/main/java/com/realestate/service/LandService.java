@@ -44,4 +44,8 @@ public class LandService {
         Land land = landMapper.map(dto);
         landRepository.save(land);
     }
+
+    public void deleteLand(Long id){
+        landRepository.deleteById(id);
+    }
 }
