@@ -1,5 +1,10 @@
 package com.realestate.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.realestate.dto.CommercialPropertyDto;
 import com.realestate.service.CommercialService;
 import jakarta.validation.Valid;
@@ -9,14 +14,17 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/commercial")
 public class CommercialPropertyController {
     private final CommercialService commercialService;
+    private final ObjectMapper objectMapper;
 
-    public CommercialPropertyController(CommercialService commercialService) {
+    public CommercialPropertyController(CommercialService commercialService, ObjectMapper objectMapper) {
         this.commercialService = commercialService;
+        this.objectMapper = objectMapper;
     }
 
     @PostMapping
@@ -42,6 +50,28 @@ public class CommercialPropertyController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allCommercial);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateCommercialProperty(@PathVariable Long id, @RequestBody JsonMergePatch patch){
+        try {
+            CommercialPropertyDto commercialPropertyDto = commercialService.getCommercialPropertyById(id).orElseThrow();
+            CommercialPropertyDto commercialPatched = applyPatch(commercialPropertyDto, patch);
+            commercialService.updateCommercialProperty(commercialPatched);
+        } catch (JsonProcessingException | JsonPatchException e){
+            return ResponseEntity.internalServerError().build();
+        } catch (NoSuchElementException e){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
+
+    }
+
+    private CommercialPropertyDto applyPatch(CommercialPropertyDto dto, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
+        JsonNode commercialNode = objectMapper.valueToTree(dto);
+        JsonNode commercialPatchedNode = patch.apply(commercialNode);
+        return objectMapper.treeToValue(commercialPatchedNode, CommercialPropertyDto.class);
+
     }
 
 }

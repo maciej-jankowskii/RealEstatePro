@@ -38,4 +38,10 @@ public class HouseService {
         List<HousePropertyDto> dtos = allHouses.stream().map(houseMapper::map).collect(Collectors.toList());
         return dtos;
     }
+
+    @Transactional
+    public void updateHouse(HousePropertyDto dto){
+        House house = houseMapper.map(dto);
+        houseRepository.save(house);
+    }
 }

@@ -38,4 +38,10 @@ public class LandService {
         List<LandPropertyDto> dtos = allLands.stream().map(landMapper::map).collect(Collectors.toList());
         return dtos;
     }
+
+    @Transactional
+    public void updateLand(LandPropertyDto dto){
+        Land land = landMapper.map(dto);
+        landRepository.save(land);
+    }
 }

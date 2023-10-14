@@ -38,7 +38,7 @@ public class ApartmentService {
         List<ApartmentPropertyDto> dtos = apartments.stream().map(apartmentMapper::map).collect(Collectors.toList());
         return dtos;
     }
-
+    @Transactional
     public void updateApartment(ApartmentPropertyDto dto){
         Apartment apartment = apartmentMapper.map(dto);
         apartmentRepository.save(apartment);

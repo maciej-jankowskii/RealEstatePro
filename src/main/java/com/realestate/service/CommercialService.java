@@ -37,4 +37,9 @@ public class CommercialService {
         List<CommercialPropertyDto> dtos = allCommercial.stream().map(commercialMapper::map).collect(Collectors.toList());
         return dtos;
     }
+    @Transactional
+    public void updateCommercialProperty(CommercialPropertyDto dto){
+        CommercialProperty commercialProperty = commercialMapper.map(dto);
+        commercialRepository.save(commercialProperty);
+    }
 }
