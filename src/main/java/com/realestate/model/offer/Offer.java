@@ -1,6 +1,7 @@
 package com.realestate.model.offer;
 
 import com.realestate.model.Property.Property;
+import com.realestate.model.reservation.Reservation;
 import com.realestate.model.client.Client;
 import com.realestate.model.user.UserEmployee;
 import jakarta.persistence.*;
@@ -22,6 +23,9 @@ public class Offer {
     private Client client;
     @ManyToOne
     private Property property;
+    @OneToOne
+    @JoinColumn(name = "reservation_id", unique = true, nullable = true)
+    private Reservation reservation;
     private Boolean isBooked;
     private Boolean isAvailable;
 }

@@ -13,8 +13,6 @@ public class LandPropertyDto {
     private String address;
     private BigDecimal price;
     private String description;
-    private Boolean available;
-    private Boolean booked;
     private String typeOfLand;
     private Double area;
     private Boolean buildingPermit;

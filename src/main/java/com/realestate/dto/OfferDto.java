@@ -10,6 +10,7 @@ public class OfferDto {
     private Long userId;
     private Long clientId;
     private Long propertyId;
+    private Long reservationId;
     private Boolean isBooked;
     private Boolean isAvailable;
 }

@@ -16,8 +16,6 @@ public class HousePropertyDto {
     private String address;
     private BigDecimal price;
     private String description;
-    private Boolean available;
-    private Boolean booked;
     private Double landArea;
     private Double houseArea;
     private Integer rooms;

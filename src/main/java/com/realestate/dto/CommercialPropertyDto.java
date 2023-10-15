@@ -16,8 +16,6 @@ public class CommercialPropertyDto {
     private String address;
     private BigDecimal price;
     private String description;
-    private Boolean available;
-    private Boolean booked;
     private Double area;
     private Integer rooms;
     private Integer bathrooms;

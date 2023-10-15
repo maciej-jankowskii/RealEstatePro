@@ -31,7 +31,7 @@ public class UserEmployee {
     @Size(min = 5, max = 100)
     private String email;
     @NotNull
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 1000)
     private String password;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
