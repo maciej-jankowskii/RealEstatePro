@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
-import com.realestate.dto.OfferAvailableDto;
 import com.realestate.dto.OfferDto;
 import com.realestate.service.OfferService;
 import org.springframework.http.ResponseEntity;
@@ -60,15 +59,6 @@ public class OfferController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allOffers);
-    }
-
-    @GetMapping("/available")
-    public ResponseEntity<List<OfferAvailableDto>> presentAvailableOffers(){
-        List<OfferAvailableDto> availableProperty = offerService.getAvailableProperty();
-        if (availableProperty.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(availableProperty);
     }
 
     @PatchMapping("/{id}")

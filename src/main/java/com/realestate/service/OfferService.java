@@ -1,8 +1,6 @@
 package com.realestate.service;
 
-import com.realestate.dto.OfferAvailableDto;
 import com.realestate.dto.OfferDto;
-import com.realestate.mapper.OfferAvailableMapper;
 import com.realestate.mapper.OfferMapper;
 import com.realestate.model.offer.Offer;
 import com.realestate.repository.OffersRepository;
@@ -18,12 +16,10 @@ public class OfferService {
 
     private final OffersRepository offersRepository;
     private final OfferMapper offerMapper;
-    private final OfferAvailableMapper offerAvailableMapper;
 
-    public OfferService(OffersRepository offersRepository, OfferMapper offerMapper, OfferAvailableMapper offerAvailableMapper) {
+    public OfferService(OffersRepository offersRepository, OfferMapper offerMapper) {
         this.offersRepository = offersRepository;
         this.offerMapper = offerMapper;
-        this.offerAvailableMapper = offerAvailableMapper;
     }
 
     @Transactional
@@ -47,12 +43,6 @@ public class OfferService {
         List<Offer> offers = (List<Offer>) offersRepository.findAll();
         List<OfferDto> dtos = offers.stream().map(offerMapper::map).collect(Collectors.toList());
         return dtos;
-    }
-
-    public List<OfferAvailableDto> getAvailableProperty(){
-        List<Offer> offers = (List<Offer>) offersRepository.findAll();
-        List<OfferAvailableDto> availableOffers = offers.stream().map(offerAvailableMapper::map).filter(OfferAvailableDto::getIsAvailable).collect(Collectors.toList());
-        return availableOffers;
     }
 
     @Transactional
