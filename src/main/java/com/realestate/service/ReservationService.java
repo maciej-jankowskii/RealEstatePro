@@ -57,6 +57,10 @@ public class ReservationService {
     }
 
     public void deleteReservation(Long id){
+        Offer offer = offersRepository.findByReservation_Id(id);
+        offer.setIsBooked(false);
+        offer.setReservation(null);
+        offersRepository.save(offer);
         reservationRepository.deleteById(id);
     }
 
