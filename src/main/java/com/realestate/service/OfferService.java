@@ -45,6 +45,26 @@ public class OfferService {
         return dtos;
     }
 
+    public void markOfferAsSold(Long offerId){
+        Offer offer = offersRepository.findById(offerId).orElseThrow();
+        offer.setIsAvailable(false);
+        offersRepository.save(offer);
+    }
+
+    public List<OfferDto> findAvailableOffers(){
+        List<Offer> offers = (List<Offer>) offersRepository.findAll();
+        List<OfferDto> availableOffers = offers.stream().filter(Offer::getIsAvailable).map(offerMapper::map).collect(Collectors.toList());
+        return availableOffers;
+    }
+
+    public List<OfferDto> findSoldOffers(){
+        List<Offer> offers = (List<Offer>) offersRepository.findAll();
+        List<OfferDto> soldOffers = offers.stream().filter(offer -> !offer.getIsAvailable()).map(offerMapper::map).collect(Collectors.toList());
+        return soldOffers;
+    }
+
+
+
     @Transactional
     public void updateOffer(OfferDto offerDto){
         Offer offer = offerMapper.map(offerDto);

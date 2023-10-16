@@ -7,6 +7,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.realestate.dto.OfferDto;
 import com.realestate.service.OfferService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -79,6 +80,30 @@ public class OfferController {
     public ResponseEntity<?> deleteOffer(@PathVariable Long id){
         offerService.deleteOffer(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/sellOffer/{id}")
+    public ResponseEntity<?> sellOfferById(@PathVariable Long id){
+        offerService.markOfferAsSold(id);
+        return ResponseEntity.ok("Offer marked as sold ");
+    }
+
+    @GetMapping("/available")
+    public ResponseEntity<List<OfferDto>> getAvailableOffers(){
+        List<OfferDto> availableOffers = offerService.findAvailableOffers();
+        if (availableOffers.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(availableOffers);
+    }
+
+    @GetMapping("/sold")
+    public ResponseEntity<List<OfferDto>> getSoldOffers(){
+        List<OfferDto> soldOffers = offerService.findSoldOffers();
+        if (soldOffers.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(soldOffers);
     }
 
     private OfferDto applyPatch(OfferDto dto, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
