@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LandMapper {
 
-    public LandPropertyDto map(Land land){
+    public LandPropertyDto map(Land land) {
         LandPropertyDto dto = new LandPropertyDto();
         dto.setId(land.getId());
         dto.setAddress(land.getAddress());
@@ -19,7 +19,8 @@ public class LandMapper {
         dto.setBuildingPermit(land.getBuildingPermit());
         return dto;
     }
-    public Land map(LandPropertyDto dto){
+
+    public Land map(LandPropertyDto dto) {
         Land land = new Land();
         land.setId(dto.getId());
         land.setAddress(dto.getAddress());

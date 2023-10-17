@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CommercialMapper {
 
-    public CommercialPropertyDto map(CommercialProperty commercialProperty){
+    public CommercialPropertyDto map(CommercialProperty commercialProperty) {
         CommercialPropertyDto dto = new CommercialPropertyDto();
         dto.setId(commercialProperty.getId());
         dto.setAddress(commercialProperty.getAddress());
@@ -24,7 +24,7 @@ public class CommercialMapper {
         return dto;
     }
 
-    public CommercialProperty map(CommercialPropertyDto dto){
+    public CommercialProperty map(CommercialPropertyDto dto) {
         CommercialProperty commercialProperty = new CommercialProperty();
         commercialProperty.setId(dto.getId());
         commercialProperty.setAddress(dto.getAddress());

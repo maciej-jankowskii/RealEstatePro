@@ -19,7 +19,9 @@ public class CommercialProperty extends Property {
     @NotNull
     @Min(1)
     private Double area;
+    @NotNull
     private Integer rooms;
+    @NotNull
     private Integer bathrooms;
     @Enumerated(EnumType.STRING)
     private BuildingType buildingType;

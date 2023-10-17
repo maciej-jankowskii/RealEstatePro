@@ -11,7 +11,7 @@ public class AuthResponseDto {
     private String tokenType = "Bearer ";
     private String errorMessage;
 
-    public AuthResponseDto(String accessToken){
+    public AuthResponseDto(String accessToken) {
         this.accessToken = accessToken;
     }
 

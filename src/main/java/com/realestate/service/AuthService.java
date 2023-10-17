@@ -3,7 +3,6 @@ package com.realestate.service;
 import com.realestate.config.JWTGenerator;
 import com.realestate.dto.LoginDto;
 import com.realestate.dto.RegisterDto;
-import com.realestate.exception.RegistrationException;
 import com.realestate.model.user.Role;
 import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.RoleRepository;
@@ -58,6 +57,4 @@ public class AuthService {
         String token = jwtGenerator.generatedToken(authenticate);
         return token;
     }
-
-
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface OffersRepository extends CrudRepository<Offer, Long> {
 
     List<Offer> findAllByClient_Id(Long id);
+
     Offer findByReservation_Id(Long reservationId);
 
     Optional<Offer> findById(Long id);

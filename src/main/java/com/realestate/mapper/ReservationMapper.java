@@ -16,14 +16,15 @@ public class ReservationMapper {
     }
 
 
-    public ReservationDto map(Reservation reservation){
+    public ReservationDto map(Reservation reservation) {
         ReservationDto dto = new ReservationDto();
         dto.setId(reservation.getId());
         dto.setDescription(reservation.getDescription());
         dto.setOfferId(reservation.getOffer().getId());
         return dto;
     }
-    public Reservation map(ReservationDto dto){
+
+    public Reservation map(ReservationDto dto) {
         Reservation reservation = new Reservation();
         reservation.setId(dto.getId());
         reservation.setDescription(dto.getDescription());

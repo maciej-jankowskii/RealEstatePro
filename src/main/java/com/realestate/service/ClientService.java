@@ -31,34 +31,31 @@ public class ClientService {
         this.offerMapper = offerMapper;
     }
 
-    public Optional<ClientDto> getClientById(Long id){
+    public Optional<ClientDto> getClientById(Long id) {
         return clientRepository.findById(id).map(clientMapper::map);
     }
 
-    public List<ClientDto> getAllClients(){
+    public List<ClientDto> getAllClients() {
         List<Client> clients = (List<Client>) clientRepository.findAll();
         List<ClientDto> dtos = clients.stream().map(clientMapper::map).collect(Collectors.toList());
         return dtos;
     }
 
     @Transactional
-    public ClientDto saveClient(ClientDto clientDto){
+    public ClientDto saveClient(ClientDto clientDto) {
         Client client = clientMapper.map(clientDto);
         Client saved = clientRepository.save(client);
         return clientMapper.map(saved);
     }
 
     @Transactional
-    public void updateClient(ClientDto clientDto){
+    public void updateClient(ClientDto clientDto) {
         Client client = clientMapper.map(clientDto);
         clientRepository.save(client);
     }
 
-    public void deleteClient(Long id){
+    public void deleteClient(Long id) {
         clientRepository.deleteById(id);
     }
-
-
-
 
 }

@@ -29,7 +29,7 @@ public class ApartmentController {
     }
 
     @PostMapping
-    public ResponseEntity<ApartmentPropertyDto> saveApartment(@Valid @RequestBody ApartmentPropertyDto apartmentDto){
+    public ResponseEntity<ApartmentPropertyDto> saveApartment(@Valid @RequestBody ApartmentPropertyDto apartmentDto) {
         ApartmentPropertyDto saved = apartmentService.saveApartment(apartmentDto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -37,17 +37,18 @@ public class ApartmentController {
                 .toUri();
         return ResponseEntity.created(uri).body(saved);
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<ApartmentPropertyDto> getApartmentById(@PathVariable Long id){
+    public ResponseEntity<ApartmentPropertyDto> getApartmentById(@PathVariable Long id) {
         return apartmentService.getApartmentById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<ApartmentPropertyDto>> getAllApartments(){
+    public ResponseEntity<List<ApartmentPropertyDto>> getAllApartments() {
         List<ApartmentPropertyDto> allApartments = apartmentService.getAllApartments();
-        if (allApartments.isEmpty()){
+        if (allApartments.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allApartments);
@@ -68,7 +69,7 @@ public class ApartmentController {
             @RequestParam(required = false) Boolean balcony,
             @RequestParam(required = false) Boolean garage,
             @RequestParam(required = false) Integer minYearOfConstruction,
-            @RequestParam(required = false) String standard){
+            @RequestParam(required = false) String standard) {
         List<ApartmentPropertyDto> filteredApartments = apartmentService.filterApartments(
                 address, maxPrice, minArea,
                 maxArea, rooms, bathrooms, duplexApartment,
@@ -80,21 +81,21 @@ public class ApartmentController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateApartment(@PathVariable Long id, @RequestBody JsonMergePatch patch){
+    public ResponseEntity<?> updateApartment(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
         try {
             ApartmentPropertyDto apartmentDto = apartmentService.getApartmentById(id).orElseThrow();
             ApartmentPropertyDto apartmentPatched = applyPatch(apartmentDto, patch);
             apartmentService.updateApartment(apartmentPatched);
-        } catch (JsonPatchException | JsonProcessingException e){
+        } catch (JsonPatchException | JsonProcessingException e) {
             return ResponseEntity.internalServerError().build();
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteApartment(@PathVariable Long id){
+    ResponseEntity<?> deleteApartment(@PathVariable Long id) {
         apartmentService.deleteApartment(id);
         return ResponseEntity.noContent().build();
     }
@@ -104,6 +105,5 @@ public class ApartmentController {
         JsonNode apartmentPatchedNode = patch.apply(apartmentNode);
         return objectMapper.treeToValue(apartmentPatchedNode, ApartmentPropertyDto.class);
     }
-
 
 }

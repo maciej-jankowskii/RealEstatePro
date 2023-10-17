@@ -24,13 +24,13 @@ public class ApartmentService {
     }
 
     @Transactional
-    public ApartmentPropertyDto saveApartment(ApartmentPropertyDto apartmentDto){
+    public ApartmentPropertyDto saveApartment(ApartmentPropertyDto apartmentDto) {
         Apartment apartment = apartmentMapper.map(apartmentDto);
         Apartment saved = apartmentRepository.save(apartment);
         return apartmentMapper.map(saved);
     }
 
-    public Optional<ApartmentPropertyDto> getApartmentById(Long id){
+    public Optional<ApartmentPropertyDto> getApartmentById(Long id) {
         return apartmentRepository.findById(id).map(apartmentMapper::map);
     }
 
@@ -47,7 +47,7 @@ public class ApartmentService {
                                                        Boolean balcony,
                                                        Boolean garage,
                                                        Integer minYearOfConstruction,
-                                                       String standard){
+                                                       String standard) {
         List<Apartment> allApartments = (List<Apartment>) apartmentRepository.findAll();
 
         return allApartments.stream()
@@ -69,18 +69,19 @@ public class ApartmentService {
                 .collect(Collectors.toList());
     }
 
-    public List<ApartmentPropertyDto> getAllApartments(){
+    public List<ApartmentPropertyDto> getAllApartments() {
         List<Apartment> apartments = (List<Apartment>) apartmentRepository.findAll();
         List<ApartmentPropertyDto> dtos = apartments.stream().map(apartmentMapper::map).collect(Collectors.toList());
         return dtos;
     }
+
     @Transactional
-    public void updateApartment(ApartmentPropertyDto dto){
+    public void updateApartment(ApartmentPropertyDto dto) {
         Apartment apartment = apartmentMapper.map(dto);
         apartmentRepository.save(apartment);
     }
 
-    public void deleteApartment(Long id){
+    public void deleteApartment(Long id) {
         apartmentRepository.deleteById(id);
     }
 }

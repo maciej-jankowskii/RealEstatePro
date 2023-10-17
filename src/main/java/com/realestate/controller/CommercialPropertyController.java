@@ -29,7 +29,7 @@ public class CommercialPropertyController {
     }
 
     @PostMapping
-    public ResponseEntity<CommercialPropertyDto> saveCommercialProperty(@Valid @RequestBody CommercialPropertyDto dto){
+    public ResponseEntity<CommercialPropertyDto> saveCommercialProperty(@Valid @RequestBody CommercialPropertyDto dto) {
         CommercialPropertyDto saved = commercialService.saveCommercialProperty(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -37,17 +37,18 @@ public class CommercialPropertyController {
                 .toUri();
         return ResponseEntity.created(uri).body(saved);
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<CommercialPropertyDto> getCommercialPropertyById(@PathVariable Long id){
+    public ResponseEntity<CommercialPropertyDto> getCommercialPropertyById(@PathVariable Long id) {
         return commercialService.getCommercialPropertyById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<CommercialPropertyDto>> getAllCommercial(){
+    public ResponseEntity<List<CommercialPropertyDto>> getAllCommercial() {
         List<CommercialPropertyDto> allCommercial = commercialService.getAllCommercialProperty();
-        if (allCommercial.isEmpty()){
+        if (allCommercial.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allCommercial);
@@ -74,14 +75,14 @@ public class CommercialPropertyController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateCommercialProperty(@PathVariable Long id, @RequestBody JsonMergePatch patch){
+    public ResponseEntity<?> updateCommercialProperty(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
         try {
             CommercialPropertyDto commercialPropertyDto = commercialService.getCommercialPropertyById(id).orElseThrow();
             CommercialPropertyDto commercialPatched = applyPatch(commercialPropertyDto, patch);
             commercialService.updateCommercialProperty(commercialPatched);
-        } catch (JsonProcessingException | JsonPatchException e){
+        } catch (JsonProcessingException | JsonPatchException e) {
             return ResponseEntity.internalServerError().build();
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
@@ -89,7 +90,7 @@ public class CommercialPropertyController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCommercialProperty(@PathVariable Long id){
+    public ResponseEntity<?> deleteCommercialProperty(@PathVariable Long id) {
         commercialService.deleteCommercialProperty(id);
         return ResponseEntity.noContent().build();
     }

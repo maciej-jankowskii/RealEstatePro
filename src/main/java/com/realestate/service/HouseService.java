@@ -24,17 +24,17 @@ public class HouseService {
     }
 
     @Transactional
-    public HousePropertyDto saveHouse(HousePropertyDto dto){
+    public HousePropertyDto saveHouse(HousePropertyDto dto) {
         House house = houseMapper.map(dto);
         House saved = houseRepository.save(house);
         return houseMapper.map(saved);
     }
 
-    public Optional<HousePropertyDto> getHouseById(Long id){
+    public Optional<HousePropertyDto> getHouseById(Long id) {
         return houseRepository.findById(id).map(houseMapper::map);
     }
 
-    public List<HousePropertyDto> getAllHouses(){
+    public List<HousePropertyDto> getAllHouses() {
         List<House> allHouses = (List<House>) houseRepository.findAll();
         List<HousePropertyDto> dtos = allHouses.stream().map(houseMapper::map).collect(Collectors.toList());
         return dtos;
@@ -56,7 +56,7 @@ public class HouseService {
             String buildingType,
             Integer minYearOfConstruction,
             String standard
-    ){
+    ) {
         List<House> allHouses = (List<House>) houseRepository.findAll();
         return allHouses.stream()
                 .filter(house -> (address == null || house.getAddress().contains(address))
@@ -80,12 +80,12 @@ public class HouseService {
     }
 
     @Transactional
-    public void updateHouse(HousePropertyDto dto){
+    public void updateHouse(HousePropertyDto dto) {
         House house = houseMapper.map(dto);
         houseRepository.save(house);
     }
 
-    public void deleteHouse(Long id){
+    public void deleteHouse(Long id) {
         houseRepository.deleteById(id);
     }
 }

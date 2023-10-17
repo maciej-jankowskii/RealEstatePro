@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "house")
-public class House  extends Property{
+public class House extends Property {
     @NotNull
     @Min(1)
     private Double landArea;
@@ -24,6 +24,7 @@ public class House  extends Property{
     private Double houseArea;
     @NotNull
     private Integer rooms;
+    @NotNull
     private Integer bathrooms;
     private Boolean balcony;
     private Boolean garage;

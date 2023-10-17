@@ -4,7 +4,6 @@ import com.realestate.dto.OfferDto;
 import com.realestate.model.Property.Property;
 import com.realestate.model.client.Client;
 import com.realestate.model.offer.Offer;
-import com.realestate.model.reservation.Reservation;
 import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.ClientRepository;
 import com.realestate.repository.PropertyRepository;
@@ -27,7 +26,7 @@ public class OfferMapper {
         this.reservationRepository = reservationRepository;
     }
 
-    public OfferDto map(Offer offer){
+    public OfferDto map(Offer offer) {
         OfferDto dto = new OfferDto();
         dto.setId(offer.getId());
         dto.setPropertyId(offer.getProperty().getId());
@@ -38,7 +37,7 @@ public class OfferMapper {
         return dto;
     }
 
-    public Offer map(OfferDto dto){
+    public Offer map(OfferDto dto) {
         Offer offer = new Offer();
         offer.setId(dto.getId());
         Property property = propertyRepository.findById(dto.getPropertyId()).orElseThrow();

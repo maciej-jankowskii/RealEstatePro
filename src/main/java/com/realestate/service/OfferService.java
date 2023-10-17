@@ -75,7 +75,4 @@ public class OfferService {
         offersRepository.deleteById(id);
     }
 
-
-
-
 }

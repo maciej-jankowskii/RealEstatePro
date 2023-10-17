@@ -19,7 +19,7 @@ public class CreditController {
     }
 
     @PostMapping("/calculate")
-    public ResponseEntity<Double> calculateLoanEligibility(@RequestBody Credit credit){
+    public ResponseEntity<Double> calculateLoanEligibility(@RequestBody Credit credit) {
         creditService.calculateLoanEligibility(credit);
         return ResponseEntity.ok(credit.getLoanAmount());
     }

@@ -28,20 +28,21 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ClientDto> getClientById(@PathVariable Long id){
+    ResponseEntity<ClientDto> getClientById(@PathVariable Long id) {
         return clientService.getClientById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
     @GetMapping("/getAll")
-    ResponseEntity<List<ClientDto>> getAllClients(){
+    ResponseEntity<List<ClientDto>> getAllClients() {
         List<ClientDto> allClients = clientService.getAllClients();
-        if (allClients.isEmpty()){
+        if (allClients.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allClients);
     }
 
     @PostMapping
-    ResponseEntity<ClientDto> saveClient(@RequestBody ClientDto clientDto){
+    ResponseEntity<ClientDto> saveClient(@RequestBody ClientDto clientDto) {
         ClientDto saved = clientService.saveClient(clientDto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -51,21 +52,21 @@ public class ClientController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody JsonMergePatch patch){
+    public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
         try {
             ClientDto clientDto = clientService.getClientById(id).orElseThrow();
             ClientDto clientPatched = applyPatch(clientDto, patch);
             clientService.updateClient(clientPatched);
-        }catch (JsonPatchException | JsonProcessingException ex){
+        } catch (JsonPatchException | JsonProcessingException ex) {
             return ResponseEntity.internalServerError().build();
-        }catch (NoSuchElementException ex){
+        } catch (NoSuchElementException ex) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteClient(@PathVariable Long id){
+    public ResponseEntity<?> deleteClient(@PathVariable Long id) {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
     }
@@ -75,6 +76,5 @@ public class ClientController {
         JsonNode clientPatched = patch.apply(clientNode);
         return objectMapper.treeToValue(clientPatched, ClientDto.class);
     }
-
 
 }

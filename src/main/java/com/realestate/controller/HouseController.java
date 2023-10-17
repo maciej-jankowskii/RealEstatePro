@@ -30,7 +30,7 @@ public class HouseController {
     }
 
     @PostMapping
-    public ResponseEntity<HousePropertyDto> saveHouse(@Valid @RequestBody HousePropertyDto dto){
+    public ResponseEntity<HousePropertyDto> saveHouse(@Valid @RequestBody HousePropertyDto dto) {
         HousePropertyDto saved = houseService.saveHouse(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -38,15 +38,16 @@ public class HouseController {
                 .toUri();
         return ResponseEntity.created(uri).body(saved);
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<HousePropertyDto> getHouseById(@PathVariable Long id){
+    public ResponseEntity<HousePropertyDto> getHouseById(@PathVariable Long id) {
         return houseService.getHouseById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<HousePropertyDto>> getAllHouses(){
+    public ResponseEntity<List<HousePropertyDto>> getAllHouses() {
         List<HousePropertyDto> allHouses = houseService.getAllHouses();
-        if (allHouses.isEmpty()){
+        if (allHouses.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allHouses);
@@ -69,7 +70,7 @@ public class HouseController {
             @RequestParam(required = false) String buildingType,
             @RequestParam(required = false) Integer minYearOfConstruction,
             @RequestParam(required = false) String standard
-    ){
+    ) {
         List<HousePropertyDto> filteredHouses = houseService.filterHouses(
                 address, minPrice, maxPrice,
                 minLandArea, maxLandArea, minHouseArea,
@@ -80,21 +81,21 @@ public class HouseController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateHouse(@PathVariable Long id, @RequestBody JsonMergePatch patch){
+    public ResponseEntity<?> updateHouse(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
         try {
             HousePropertyDto houseDto = houseService.getHouseById(id).orElseThrow();
             HousePropertyDto patchedHouse = applyPatch(houseDto, patch);
             houseService.updateHouse(patchedHouse);
-        } catch (JsonPatchException | JsonProcessingException ex){
+        } catch (JsonPatchException | JsonProcessingException ex) {
             return ResponseEntity.internalServerError().build();
-        }catch (NoSuchElementException ex){
+        } catch (NoSuchElementException ex) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteHouse(@PathVariable Long id){
+    public ResponseEntity<?> deleteHouse(@PathVariable Long id) {
         houseService.deleteHouse(id);
         return ResponseEntity.noContent().build();
     }

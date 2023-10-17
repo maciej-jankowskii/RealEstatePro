@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PropertyMapper {
 
-    public PropertyDto map(Property property){
+    public PropertyDto map(Property property) {
         PropertyDto dto = new PropertyDto();
         dto.setId(property.getId());
         dto.setAddress(property.getAddress());
@@ -16,7 +16,7 @@ public class PropertyMapper {
         return dto;
     }
 
-    public Property map(PropertyDto propertyDto){
+    public Property map(PropertyDto propertyDto) {
         Property property = new Property();
         property.setId(propertyDto.getId());
         property.setAddress(propertyDto.getAddress());

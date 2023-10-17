@@ -1,9 +1,5 @@
 package com.realestate.dto;
 
-import com.realestate.enums.BuildingType;
-import com.realestate.enums.Standard;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 

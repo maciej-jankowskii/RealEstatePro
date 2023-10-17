@@ -1,6 +1,5 @@
 package com.realestate.dto;
 
-import com.realestate.enums.TypeOfLand;
 import lombok.Getter;
 import lombok.Setter;
 

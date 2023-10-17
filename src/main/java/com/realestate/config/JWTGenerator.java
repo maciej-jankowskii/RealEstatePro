@@ -1,10 +1,8 @@
 package com.realestate.config;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -13,7 +11,7 @@ import java.util.Date;
 
 @Component
 public class JWTGenerator {
-    public String generatedToken(Authentication authentication){
+    public String generatedToken(Authentication authentication) {
         String userEmail = authentication.getName();
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
@@ -27,7 +25,7 @@ public class JWTGenerator {
         return token;
     }
 
-    public String getUserEmailFromJWT(String token){
+    public String getUserEmailFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(SecurityConstants.JWT_SECRET)
                 .parseClaimsJws(token)
@@ -35,11 +33,11 @@ public class JWTGenerator {
         return claims.getSubject();
     }
 
-    public boolean validateToken(String token){
+    public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(SecurityConstants.JWT_SECRET).parseClaimsJws(token);
             return true;
-        } catch (Exception ex){
+        } catch (Exception ex) {
             throw new AuthenticationCredentialsNotFoundException("JWT was expired or incorrect!");
         }
     }

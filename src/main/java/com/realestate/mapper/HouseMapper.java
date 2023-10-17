@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HouseMapper {
 
-    public HousePropertyDto map(House house){
+    public HousePropertyDto map(House house) {
         HousePropertyDto dto = new HousePropertyDto();
         dto.setId(house.getId());
         dto.setAddress(house.getAddress());
@@ -28,7 +28,7 @@ public class HouseMapper {
         return dto;
     }
 
-    public House map(HousePropertyDto dto){
+    public House map(HousePropertyDto dto) {
         House house = new House();
         house.setId(dto.getId());
         house.setAddress(dto.getAddress());

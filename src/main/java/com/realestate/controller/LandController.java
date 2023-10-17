@@ -30,7 +30,7 @@ public class LandController {
     }
 
     @PostMapping
-    public ResponseEntity<LandPropertyDto> saveLandProperty(@Valid @RequestBody LandPropertyDto dto){
+    public ResponseEntity<LandPropertyDto> saveLandProperty(@Valid @RequestBody LandPropertyDto dto) {
         LandPropertyDto saved = landService.saveLand(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -40,13 +40,14 @@ public class LandController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LandPropertyDto> getLandById(@PathVariable Long id){
+    public ResponseEntity<LandPropertyDto> getLandById(@PathVariable Long id) {
         return landService.getLandById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
     @GetMapping("/getAll")
-    public ResponseEntity<List<LandPropertyDto>> getAllLands(){
+    public ResponseEntity<List<LandPropertyDto>> getAllLands() {
         List<LandPropertyDto> allLands = landService.getAllLands();
-        if (allLands.isEmpty()){
+        if (allLands.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allLands);
@@ -61,7 +62,7 @@ public class LandController {
             @RequestParam(required = false) Double minArea,
             @RequestParam(required = false) Double maxArea,
             @RequestParam(required = false) Boolean buildingPermit
-    ){
+    ) {
         List<LandPropertyDto> filteredLands = landService.filterLands(
                 address, minPrice, maxPrice,
                 typeOfLand, minArea, maxArea, buildingPermit);
@@ -70,14 +71,14 @@ public class LandController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> updateLand(@PathVariable Long id, @RequestBody JsonMergePatch patch){
+    public ResponseEntity<?> updateLand(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
         try {
             LandPropertyDto landDto = landService.getLandById(id).orElseThrow();
             LandPropertyDto patchedLand = applyPatch(landDto, patch);
             landService.updateLand(patchedLand);
-        }catch (JsonProcessingException | JsonPatchException ex){
+        } catch (JsonProcessingException | JsonPatchException ex) {
             return ResponseEntity.internalServerError().build();
-        }catch (NoSuchElementException ex){
+        } catch (NoSuchElementException ex) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
@@ -85,7 +86,7 @@ public class LandController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteLand(@PathVariable Long id){
+    public ResponseEntity<?> deleteLand(@PathVariable Long id) {
         landService.deleteLand(id);
         return ResponseEntity.noContent().build();
     }
