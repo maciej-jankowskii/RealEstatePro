@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,6 +51,32 @@ public class ApartmentController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allApartments);
+    }
+
+    @GetMapping("/filtered")
+    public ResponseEntity<List<ApartmentPropertyDto>> filterApartments(
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Double minArea,
+            @RequestParam(required = false) Double maxArea,
+            @RequestParam(required = false) Integer rooms,
+            @RequestParam(required = false) Integer bathrooms,
+            @RequestParam(required = false) Boolean duplexApartment,
+            @RequestParam(required = false) String buildingType,
+            @RequestParam(required = false) Integer maxFloor,
+            @RequestParam(required = false) Boolean elevator,
+            @RequestParam(required = false) Boolean balcony,
+            @RequestParam(required = false) Boolean garage,
+            @RequestParam(required = false) Integer minYearOfConstruction,
+            @RequestParam(required = false) String standard){
+        List<ApartmentPropertyDto> filteredApartments = apartmentService.filterApartments(
+                address, maxPrice, minArea,
+                maxArea, rooms, bathrooms, duplexApartment,
+                buildingType, maxFloor, elevator,
+                balcony, garage, minYearOfConstruction, standard);
+        return ResponseEntity.ok(filteredApartments);
+
+
     }
 
     @PatchMapping("/{id}")
