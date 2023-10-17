@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,6 +50,33 @@ public class HouseController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allHouses);
+    }
+
+    @GetMapping("/filtered")
+    public ResponseEntity<List<HousePropertyDto>> filterHouses(
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Double minLandArea,
+            @RequestParam(required = false) Double maxLandArea,
+            @RequestParam(required = false) Double minHouseArea,
+            @RequestParam(required = false) Double maxHouseArea,
+            @RequestParam(required = false) Integer rooms,
+            @RequestParam(required = false) Integer bathrooms,
+            @RequestParam(required = false) Boolean balcony,
+            @RequestParam(required = false) Boolean garage,
+            @RequestParam(required = false) Boolean twoStoryHouse,
+            @RequestParam(required = false) String buildingType,
+            @RequestParam(required = false) Integer minYearOfConstruction,
+            @RequestParam(required = false) String standard
+    ){
+        List<HousePropertyDto> filteredHouses = houseService.filterHouses(
+                address, minPrice, maxPrice,
+                minLandArea, maxLandArea, minHouseArea,
+                maxHouseArea, rooms, bathrooms, balcony,
+                garage, twoStoryHouse, buildingType,
+                minYearOfConstruction, standard);
+        return ResponseEntity.ok(filteredHouses);
     }
 
     @PatchMapping("/{id}")

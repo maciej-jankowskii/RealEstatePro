@@ -6,5 +6,8 @@ public enum BuildingType {
     MULTI_FAMILY_HOUSE,
     APARTMENT_BUILDING,
     TENEMENT,
-    SKYSCRAPER
+    SKYSCRAPER,
+    HALL,
+    WAREHOUSE,
+
 }

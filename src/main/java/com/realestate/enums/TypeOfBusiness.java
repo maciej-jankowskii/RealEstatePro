@@ -5,7 +5,7 @@ public enum TypeOfBusiness {
     COSMETOLOGY,
     SHOP,
     SUPERMARKET,
-    WAREHOUSE,
     SERVICES,
+    OFFICE,
     OTHER,
 }

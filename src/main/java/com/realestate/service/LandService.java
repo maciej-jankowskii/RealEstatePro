@@ -7,6 +7,7 @@ import com.realestate.repository.LandRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +38,27 @@ public class LandService {
         List<Land> allLands = (List<Land>) landRepository.findAll();
         List<LandPropertyDto> dtos = allLands.stream().map(landMapper::map).collect(Collectors.toList());
         return dtos;
+    }
+
+    public List<LandPropertyDto> filterLands(
+            String address,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            String typeOfLand,
+            Double minArea,
+            Double maxArea,
+            Boolean buildingPermit
+    ){
+        List<Land> allLands = (List<Land>) landRepository.findAll();
+        return allLands.stream().filter(land -> (address == null || land.getAddress().contains(address))
+        && (minPrice == null || land.getPrice().compareTo(minPrice) >= 0)
+        && (maxPrice == null || land.getPrice().compareTo(maxPrice) <= 0)
+        && (typeOfLand == null || land.getTypeOfLand().name().equals(typeOfLand))
+        && (minArea == null || land.getArea() >= minArea)
+        && (maxArea == null || land.getArea() <= maxArea)
+        && (buildingPermit == null || land.getBuildingPermit().equals(buildingPermit)))
+                .map(landMapper::map)
+                .collect(Collectors.toList());
     }
 
     @Transactional
