@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,6 +51,26 @@ public class CommercialPropertyController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allCommercial);
+    }
+
+    @GetMapping("/filtered")
+    public ResponseEntity<List<CommercialPropertyDto>> filterCommercialProperties(
+            @RequestParam(required = false) String address,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Double minArea,
+            @RequestParam(required = false) Double maxArea,
+            @RequestParam(required = false) Integer rooms,
+            @RequestParam(required = false) Integer bathrooms,
+            @RequestParam(required = false) String buildingType,
+            @RequestParam(required = false) Integer maxFloor,
+            @RequestParam(required = false) String typeOfBusiness
+    ) {
+        List<CommercialPropertyDto> filteredCommercialProperties = commercialService.filterCommercialProperties(
+                address, maxPrice, minArea,
+                maxArea, rooms, bathrooms,
+                buildingType, maxFloor, typeOfBusiness);
+        return ResponseEntity.ok(filteredCommercialProperties);
+
     }
 
     @PatchMapping("/{id}")
