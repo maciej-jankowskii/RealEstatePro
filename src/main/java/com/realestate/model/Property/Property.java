@@ -18,10 +18,8 @@ public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
     private String address;
-    @NotNull
-    @Min(1)
+    @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
     private String description;
 }

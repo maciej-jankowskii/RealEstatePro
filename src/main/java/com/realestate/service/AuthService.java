@@ -44,7 +44,7 @@ public class AuthService {
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-        Role roleAgent = roleRepository.findByName("AGENT").orElseThrow(() -> new RuntimeException("Role not found"));
+        Role roleAgent = roleRepository.findByRoleName("AGENT").orElseThrow(() -> new RuntimeException("Role not found"));
         user.setRoles(Collections.singletonList(roleAgent));
 
         userRepository.save(user);

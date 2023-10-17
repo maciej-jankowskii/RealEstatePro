@@ -81,7 +81,7 @@ public class OfferController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/sellOffer/{id}")
+    @PatchMapping("/sell/{id}")
     public ResponseEntity<?> sellOfferById(@PathVariable Long id) {
         offerService.markOfferAsSold(id);
         return ResponseEntity.ok("Offer marked as sold ");

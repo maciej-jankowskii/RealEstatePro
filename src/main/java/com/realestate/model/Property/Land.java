@@ -16,7 +16,6 @@ import lombok.Setter;
 public class Land extends Property{
     @Enumerated(EnumType.STRING)
     private TypeOfLand typeOfLand;
-    @NotNull
     private Double area;
     private Boolean buildingPermit;
 

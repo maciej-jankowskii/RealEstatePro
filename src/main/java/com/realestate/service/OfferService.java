@@ -48,6 +48,7 @@ public class OfferService {
     public void markOfferAsSold(Long offerId){
         Offer offer = offersRepository.findById(offerId).orElseThrow();
         offer.setIsAvailable(false);
+        System.out.println(offer.getId());
         offersRepository.save(offer);
     }
 

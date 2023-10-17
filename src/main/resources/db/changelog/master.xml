@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+    <include file="001_create_tables.xml" relativeToChangelogFile="true"/>
+    <include file="../data/userdata.sql" relativeToChangelogFile="true"/>
+    <include file="../data/roledata.sql" relativeToChangelogFile="true"/>
+    <include file="../data/property.sql" relativeToChangelogFile="true"/>
+    <include file="../data/apartment.sql" relativeToChangelogFile="true"/>
+    <include file="../data/commercial.sql" relativeToChangelogFile="true"/>
+    <include file="../data/land.sql" relativeToChangelogFile="true"/>
+    <include file="../data/client.sql" relativeToChangelogFile="true"/>
+    <include file="../data/offer.sql" relativeToChangelogFile="true"/>
+</databaseChangeLog>

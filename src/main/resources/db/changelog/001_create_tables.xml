@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.2.xsd">
+    <changeSet id="001" author="maciej-jankowski">
+        <createTable tableName="users">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="002" author="maciej-jankowski">
+        <createTable tableName="roles">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role_name" type="VARCHAR(100)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="003" author="maciej-jankowski">
+        <createTable tableName="user_roles">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="005" author="maciej-jankowski">
+        <addForeignKeyConstraint baseTableName="user_roles" baseColumnNames="user_id" constraintName="fk_user_role"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="user_roles" baseColumnNames="role_id" constraintName="fk_role_user"
+                                 referencedTableName="roles" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="006" author="maciej-jankowski">
+        <createTable tableName="client">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telephone" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="007" author="maciej-jankowski">
+        <createTable tableName="property">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="008" author="maciej-jankowski">
+        <createTable tableName="apartment">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="area" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rooms" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bathrooms" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duplex_apartment" type="BOOLEAN"/>
+            <column name="building_type" type="VARCHAR(255)"/>
+            <column name="floor" type="INTEGER"/>
+            <column name="elevator" type="BOOLEAN"/>
+            <column name="balcony" type="BOOLEAN"/>
+            <column name="garage" type="BOOLEAN"/>
+            <column name="year_of_construction" type="INTEGER"/>
+            <column name="standard" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="009" author="maciej-jankowski">
+        <createTable tableName="commercial_property">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="area" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rooms" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bathrooms" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="building_type" type="VARCHAR(255)"/>
+            <column name="floor" type="INTEGER"/>
+            <column name="type_of_business" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="010" author="maciej-jankowski">
+        <createTable tableName="house">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="land_area" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="house_area" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="rooms" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bathrooms" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balcony" type="BOOLEAN"/>
+            <column name="garage" type="BOOLEAN"/>
+            <column name="two_story_house" type="BOOLEAN"/>
+            <column name="building_type" type="VARCHAR(255)"/>
+            <column name="year_of_construction" type="INTEGER"/>
+            <column name="standard" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="011" author="maciej-jankowski">
+        <createTable tableName="land">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type_of_land" type="VARCHAR(255)"/>
+            <column name="area" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="building_permit" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="012" author="maciej-jankowski">
+        <addForeignKeyConstraint baseTableName="apartment" baseColumnNames="id" constraintName="fk_property_apartment"
+                                 referencedTableName="property" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="commercial_property" baseColumnNames="id"
+                                 constraintName="fk_property_commercial_property" referencedTableName="property"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="house" baseColumnNames="id" constraintName="fk_property_house"
+                                 referencedTableName="property" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="land" baseColumnNames="id" constraintName="fk_property_land"
+                                 referencedTableName="property" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="013" author="maciej-jankowski">
+        <createTable tableName="offer">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="client_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="property_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reservation_id" type="BIGINT">
+                <constraints unique="true" nullable="true"/>
+            </column>
+            <column name="is_booked" type="BOOLEAN"/>
+            <column name="is_available" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="014" author="maciej-jankowski">
+        <createTable tableName="reservation">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="offer_id" type="BIGINT">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="015" author="maciej-jankowski">
+        <addForeignKeyConstraint baseTableName="offer" baseColumnNames="user_id" constraintName="fk_offer_user"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="offer" baseColumnNames="client_id" constraintName="fk_offer_client"
+                                 referencedTableName="client" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="offer" baseColumnNames="property_id" constraintName="fk_offer_property"
+                                 referencedTableName="property" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="016" author="maciej-jankowski">
+        <addForeignKeyConstraint baseTableName="reservation" baseColumnNames="offer_id"
+                                 constraintName="fk_reservation_offer" referencedTableName="offer"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

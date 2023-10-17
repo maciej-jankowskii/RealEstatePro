@@ -16,12 +16,9 @@ import lombok.Setter;
 @Setter
 @Table(name = "apartment")
 public class Apartment extends Property {
-    @NotNull
-    @Min(1)
+
     private Double area;
-    @NotNull
     private Integer rooms;
-    @NotNull
     private Integer bathrooms;
     private Boolean duplexApartment;
     @Enumerated(EnumType.STRING)

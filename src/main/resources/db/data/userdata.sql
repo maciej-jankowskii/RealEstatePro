@@ -1,0 +1,2 @@
+insert into users(first_name, last_name, email, password) values ('John', 'Doe', 'john@realestate.com', '$2a$10$s011msky2eFLlnOKx14X7OIHQketELyiA2A7NJSCsKYGx8.IdWPNS');
+-- login: john@realestate.com , password: hard
