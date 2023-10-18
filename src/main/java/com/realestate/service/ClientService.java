@@ -21,14 +21,10 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
-    private final OffersRepository offersRepository;
-    private final OfferMapper offerMapper;
 
-    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper, OffersRepository offersRepository, OfferMapper offerMapper) {
+    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
-        this.offersRepository = offersRepository;
-        this.offerMapper = offerMapper;
     }
 
     public Optional<ClientDto> getClientById(Long id) {

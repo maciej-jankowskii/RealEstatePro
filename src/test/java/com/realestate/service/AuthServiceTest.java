@@ -27,7 +27,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
 class AuthServiceTest {
     @Mock
     private UserRepository userRepository;
@@ -39,9 +38,7 @@ class AuthServiceTest {
     private AuthenticationManager authenticationManager;
     @Mock
     private JWTGenerator jwtGenerator;
-    @Mock
-    private Validator validator;
-
+    @Mock private Validator validator;
     @InjectMocks
     private AuthService authService;
 
@@ -56,10 +53,10 @@ class AuthServiceTest {
         dto.setFirstName("John");
         dto.setLastName("Doe");
         dto.setEmail("john@example.com");
-        dto.setPassword("pasword");
+        dto.setPassword("password");
 
         Role role = new Role();
-        role.setRoleName("AGNET");
+        role.setRoleName("AGENT");
 
         when(userRepository.existsByEmail(dto.getEmail())).thenReturn(false);
         when(roleRepository.findByRoleName("AGENT")).thenReturn(Optional.of(role));
