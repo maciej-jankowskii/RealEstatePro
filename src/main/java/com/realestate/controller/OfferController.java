@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/offer")
+@CrossOrigin("*")
 public class OfferController {
 
     private final OfferService offerService;

@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/commercial")
+@CrossOrigin("*")
 public class CommercialPropertyController {
     private final CommercialService commercialService;
     private final ObjectMapper objectMapper;

@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/house")
+@CrossOrigin("*")
 public class HouseController {
 
     private final HouseService houseService;

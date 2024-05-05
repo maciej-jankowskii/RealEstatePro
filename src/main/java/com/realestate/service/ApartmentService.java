@@ -4,6 +4,9 @@ import com.realestate.dto.ApartmentPropertyDto;
 import com.realestate.mapper.ApartmentMapper;
 import com.realestate.model.Property.Apartment;
 import com.realestate.repository.ApartmentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,10 +72,13 @@ public class ApartmentService {
                 .collect(Collectors.toList());
     }
 
-    public List<ApartmentPropertyDto> getAllApartments() {
-        List<Apartment> apartments = (List<Apartment>) apartmentRepository.findAll();
-        List<ApartmentPropertyDto> dtos = apartments.stream().map(apartmentMapper::map).collect(Collectors.toList());
-        return dtos;
+    public List<ApartmentPropertyDto> getAllApartments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Apartment> apartmentsPage = apartmentRepository.findAll(pageable);
+        List<ApartmentPropertyDto> apartmentDtos = apartmentsPage.getContent().stream()
+                .map(apartmentMapper::map)
+                .collect(Collectors.toList());
+        return apartmentDtos;
     }
 
     @Transactional

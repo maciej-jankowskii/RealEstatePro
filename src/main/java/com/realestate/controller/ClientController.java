@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/client")
+@CrossOrigin("*")
 public class ClientController {
 
     private final ClientService clientService;
@@ -35,6 +36,7 @@ public class ClientController {
     @GetMapping("/getAll")
     ResponseEntity<List<ClientDto>> getAllClients() {
         List<ClientDto> allClients = clientService.getAllClients();
+
         if (allClients.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

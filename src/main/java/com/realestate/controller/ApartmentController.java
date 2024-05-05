@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/apartment")
+@CrossOrigin("*")
 public class ApartmentController {
     private final ApartmentService apartmentService;
     private final ObjectMapper objectMapper;
@@ -46,8 +47,10 @@ public class ApartmentController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<ApartmentPropertyDto>> getAllApartments() {
-        List<ApartmentPropertyDto> allApartments = apartmentService.getAllApartments();
+    public ResponseEntity<List<ApartmentPropertyDto>> getAllApartments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        List<ApartmentPropertyDto> allApartments = apartmentService.getAllApartments(page, size);
         if (allApartments.isEmpty()) {
             return ResponseEntity.notFound().build();
         }

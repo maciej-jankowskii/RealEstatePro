@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/land")
+@CrossOrigin("*")
 public class LandController {
 
     private final LandService landService;

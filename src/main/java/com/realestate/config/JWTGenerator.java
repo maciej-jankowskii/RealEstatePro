@@ -2,11 +2,15 @@ package com.realestate.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import java.security.Key;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.KeyPairGeneratorSpi;
 import java.util.Date;
 
 @Component

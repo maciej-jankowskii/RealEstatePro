@@ -140,6 +140,5 @@ class AuthServiceTest {
         } catch (UnauthorizedException e) {
             assertEquals("Invalid data", e.getMessage());
         }
-
     }
 }
