@@ -22,7 +22,6 @@ public class Property {
     @NotBlank
     private String address;
     @Column(name = "price", precision = 10, scale = 2)
-    @NotBlank
     private BigDecimal price;
     private String description;
 }

@@ -4,6 +4,7 @@ import com.realestate.config.JWTGenerator;
 import com.realestate.dto.LoginDto;
 import com.realestate.dto.RegisterDto;
 import com.realestate.exceptions.RegistrationException;
+import com.realestate.exceptions.ResourceNotFoundException;
 import com.realestate.exceptions.UnauthorizedException;
 import com.realestate.model.user.Role;
 import com.realestate.model.user.UserEmployee;
@@ -12,6 +13,7 @@ import com.realestate.repository.UserRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,23 +51,14 @@ public class AuthService {
             return "Email is taken!";
         }
 
-        UserEmployee user = new UserEmployee();
-        user.setFirstName(registerDto.getFirstName());
-        user.setLastName(registerDto.getLastName());
-        user.setEmail(registerDto.getEmail());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-
-        Set<ConstraintViolation<UserEmployee>> violationSet = validator.validate(user);
-        if (!violationSet.isEmpty()){
-            throw new RegistrationException("Invalid user data");
-        }
-
-        Role roleAgent = roleRepository.findByRoleName("AGENT").orElseThrow(() -> new RuntimeException("Role not found"));
-        user.setRoles(Collections.singletonList(roleAgent));
-
+        UserEmployee user = createEmployee(registerDto);
+        checkCorrectRegisterData(user);
         userRepository.save(user);
+
         return "User registered successfully!";
     }
+
+
 
     public String loginUser(LoginDto loginDto) {
         try {
@@ -76,5 +69,32 @@ public class AuthService {
         } catch (AuthenticationException exception){
             throw new UnauthorizedException("Invalid data");
         }
+    }
+
+
+
+
+    /**
+
+        HELPER METHODS FOR REGISTER
+
+     **/
+
+    private void checkCorrectRegisterData(UserEmployee user) {
+        Set<ConstraintViolation<UserEmployee>> violationSet = validator.validate(user);
+        if (!violationSet.isEmpty()){
+            throw new RegistrationException("Invalid user data");
+        }
+    }
+
+    private UserEmployee createEmployee(RegisterDto registerDto) {
+        UserEmployee user = new UserEmployee();
+        user.setFirstName(registerDto.getFirstName());
+        user.setLastName(registerDto.getLastName());
+        user.setEmail(registerDto.getEmail());
+        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        Role roleAgent = roleRepository.findByRoleName("AGENT").orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+        user.setRoles(Collections.singletonList(roleAgent));
+        return user;
     }
 }

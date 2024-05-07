@@ -1,6 +1,7 @@
 package com.realestate.mapper;
 
 import com.realestate.dto.OfferDto;
+import com.realestate.exceptions.ResourceNotFoundException;
 import com.realestate.model.Property.Property;
 import com.realestate.model.client.Client;
 import com.realestate.model.offer.Offer;
@@ -40,11 +41,11 @@ public class OfferMapper {
     public Offer map(OfferDto dto) {
         Offer offer = new Offer();
         offer.setId(dto.getId());
-        Property property = propertyRepository.findById(dto.getPropertyId()).orElseThrow();
+        Property property = propertyRepository.findById(dto.getPropertyId()).orElseThrow(() -> new ResourceNotFoundException("Property not found"));
         offer.setProperty(property);
-        Client client = clientRepository.findById(dto.getClientId()).orElseThrow();
+        Client client = clientRepository.findById(dto.getClientId()).orElseThrow(() -> new ResourceNotFoundException("Client not found"));
         offer.setClient(client);
-        UserEmployee userEmployee = userRepository.findById(dto.getUserId()).orElseThrow();
+        UserEmployee userEmployee = userRepository.findById(dto.getUserId()).orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
         offer.setUser(userEmployee);
         offer.setIsBooked(dto.getIsBooked());
         offer.setIsAvailable(dto.getIsAvailable());

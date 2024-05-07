@@ -1,32 +1,24 @@
 package com.realestate.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.realestate.dto.ApartmentPropertyDto;
+import com.realestate.exceptions.CannotDeleteResourceException;
 import com.realestate.service.ApartmentService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/apartment")
+@RequestMapping("/api/apartments")
 @CrossOrigin("*")
 public class ApartmentController {
     private final ApartmentService apartmentService;
-    private final ObjectMapper objectMapper;
 
-    public ApartmentController(ApartmentService apartmentService, ObjectMapper objectMapper) {
+    public ApartmentController(ApartmentService apartmentService) {
         this.apartmentService = apartmentService;
-        this.objectMapper = objectMapper;
     }
 
     @PostMapping
@@ -41,12 +33,11 @@ public class ApartmentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApartmentPropertyDto> getApartmentById(@PathVariable Long id) {
-        return apartmentService.getApartmentById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        ApartmentPropertyDto dto = apartmentService.getApartmentById(id);
+        return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("")
     public ResponseEntity<List<ApartmentPropertyDto>> getAllApartments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
@@ -57,56 +48,46 @@ public class ApartmentController {
         return ResponseEntity.ok(allApartments);
     }
 
-    @GetMapping("/filtered")
-    public ResponseEntity<List<ApartmentPropertyDto>> filterApartments(
-            @RequestParam(required = false) String address,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) Double minArea,
-            @RequestParam(required = false) Double maxArea,
-            @RequestParam(required = false) Integer rooms,
-            @RequestParam(required = false) Integer bathrooms,
-            @RequestParam(required = false) Boolean duplexApartment,
-            @RequestParam(required = false) String buildingType,
-            @RequestParam(required = false) Integer maxFloor,
-            @RequestParam(required = false) Boolean elevator,
-            @RequestParam(required = false) Boolean balcony,
-            @RequestParam(required = false) Boolean garage,
-            @RequestParam(required = false) Integer minYearOfConstruction,
-            @RequestParam(required = false) String standard) {
-        List<ApartmentPropertyDto> filteredApartments = apartmentService.filterApartments(
-                address, maxPrice, minArea,
-                maxArea, rooms, bathrooms, duplexApartment,
-                buildingType, maxFloor, elevator,
-                balcony, garage, minYearOfConstruction, standard);
-        return ResponseEntity.ok(filteredApartments);
+//    @GetMapping("/filtered")
+//    public ResponseEntity<List<ApartmentPropertyDto>> filterApartments(
+//            @RequestParam(required = false) String address,
+//            @RequestParam(required = false) BigDecimal maxPrice,
+//            @RequestParam(required = false) Double minArea,
+//            @RequestParam(required = false) Double maxArea,
+//            @RequestParam(required = false) Integer rooms,
+//            @RequestParam(required = false) Integer bathrooms,
+//            @RequestParam(required = false) Boolean duplexApartment,
+//            @RequestParam(required = false) String buildingType,
+//            @RequestParam(required = false) Integer maxFloor,
+//            @RequestParam(required = false) Boolean elevator,
+//            @RequestParam(required = false) Boolean balcony,
+//            @RequestParam(required = false) Boolean garage,
+//            @RequestParam(required = false) Integer minYearOfConstruction,
+//            @RequestParam(required = false) String standard) {
+//        List<ApartmentPropertyDto> filteredApartments = apartmentService.filterApartments(
+//                address, maxPrice, minArea,
+//                maxArea, rooms, bathrooms, duplexApartment,
+//                buildingType, maxFloor, elevator,
+//                balcony, garage, minYearOfConstruction, standard);
+//        return ResponseEntity.ok(filteredApartments);
+//
+//
+//    }
 
+    @PutMapping("/update-apartment/{id}")
+    public ResponseEntity<?> updateApartment(@PathVariable Long id, @RequestBody ApartmentPropertyDto updateDto) {
+        apartmentService.updateApartment(id, updateDto);
 
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> updateApartment(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
-        try {
-            ApartmentPropertyDto apartmentDto = apartmentService.getApartmentById(id).orElseThrow();
-            ApartmentPropertyDto apartmentPatched = applyPatch(apartmentDto, patch);
-            apartmentService.updateApartment(apartmentPatched);
-        } catch (JsonPatchException | JsonProcessingException e) {
-            return ResponseEntity.internalServerError().build();
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete-apartment/{id}")
     ResponseEntity<?> deleteApartment(@PathVariable Long id) {
-        apartmentService.deleteApartment(id);
-        return ResponseEntity.noContent().build();
+        try{
+            apartmentService.deleteApartment(id);
+            return ResponseEntity.noContent().build();
+        }catch (CannotDeleteResourceException ex){
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
-
-    private ApartmentPropertyDto applyPatch(ApartmentPropertyDto dto, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
-        JsonNode apartmentNode = objectMapper.valueToTree(dto);
-        JsonNode apartmentPatchedNode = patch.apply(apartmentNode);
-        return objectMapper.treeToValue(apartmentPatchedNode, ApartmentPropertyDto.class);
-    }
-
 }
