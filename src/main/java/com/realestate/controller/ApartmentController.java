@@ -83,11 +83,8 @@ public class ApartmentController {
 
     @DeleteMapping("/delete-apartment/{id}")
     ResponseEntity<?> deleteApartment(@PathVariable Long id) {
-        try{
-            apartmentService.deleteApartment(id);
-            return ResponseEntity.noContent().build();
-        }catch (CannotDeleteResourceException ex){
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
+        apartmentService.deleteApartment(id);
+        return ResponseEntity.noContent().build();
+
     }
 }

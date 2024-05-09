@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({CannotDeleteResourceException.class})
     @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public String handleDeleteResourceException(CannotDeleteResourceException ex){
         return ex.getMessage();
     }
