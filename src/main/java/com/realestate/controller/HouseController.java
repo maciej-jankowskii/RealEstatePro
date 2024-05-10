@@ -76,7 +76,7 @@ public class HouseController {
 //        return ResponseEntity.ok(filteredHouses);
 //    }
 
-    @PatchMapping("/update-house/{id}")
+    @PutMapping("/update-house/{id}")
     public ResponseEntity<?> updateHouse(@PathVariable Long id, @RequestBody HousePropertyDto updateDto) {
         houseService.updateHouse(id, updateDto);
         return ResponseEntity.noContent().build();
