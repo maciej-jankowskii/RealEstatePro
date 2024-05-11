@@ -1,10 +1,4 @@
 package com.realestate.controller;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.fge.jsonpatch.JsonPatchException;
-import com.github.fge.jsonpatch.mergepatch.JsonMergePatch;
 import com.realestate.dto.OfferDto;
 import com.realestate.service.OfferService;
 import org.springframework.http.ResponseEntity;
@@ -13,19 +7,17 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 
 @RestController
-@RequestMapping("/offer")
+@RequestMapping("/api/offers")
 @CrossOrigin("*")
 public class OfferController {
 
     private final OfferService offerService;
-    private final ObjectMapper objectMapper;
 
-    public OfferController(OfferService offerService, ObjectMapper objectMapper) {
+    public OfferController(OfferService offerService) {
         this.offerService = offerService;
-        this.objectMapper = objectMapper;
     }
 
     @PostMapping
@@ -40,8 +32,8 @@ public class OfferController {
 
     @GetMapping("/{id}")
     public ResponseEntity<OfferDto> getOfferById(@PathVariable Long id) {
-        return offerService.getOfferById(id).map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        OfferDto offer = offerService.getOfferById(id);
+        return ResponseEntity.ok(offer);
     }
 
     @GetMapping("/client/{id}")
@@ -53,63 +45,34 @@ public class OfferController {
         return ResponseEntity.ok(offersByClient);
     }
 
-    @GetMapping("/getAll")
-    public ResponseEntity<List<OfferDto>> getAllOffers() {
-        List<OfferDto> allOffers = offerService.getAllOffers();
+    @GetMapping("")
+    public ResponseEntity<List<OfferDto>> getAllOffers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        List<OfferDto> allOffers = offerService.getAllOffers(page, size);
         if (allOffers.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(allOffers);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> updateOffer(@PathVariable Long id, @RequestBody JsonMergePatch patch) {
-        try {
-            OfferDto offerDto = offerService.getOfferById(id).orElseThrow();
-            OfferDto patchedOffer = applyPatch(offerDto, patch);
-            offerService.updateOffer(patchedOffer);
-        } catch (JsonPatchException | JsonProcessingException ex) {
-            return ResponseEntity.internalServerError().build();
-        } catch (NoSuchElementException ex) {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/update-offer/{id}")
+    public ResponseEntity<?> updateOffer(@PathVariable Long id, @RequestBody OfferDto updateDto) {
+        offerService.updateOffer(id, updateDto);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete-offer/{id}")
     public ResponseEntity<?> deleteOffer(@PathVariable Long id) {
         offerService.deleteOffer(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/sell/{id}")
+    @PatchMapping("/sold/{id}")
     public ResponseEntity<?> sellOfferById(@PathVariable Long id) {
         offerService.markOfferAsSold(id);
         return ResponseEntity.ok("Offer marked as sold ");
-    }
-
-    @GetMapping("/available")
-    public ResponseEntity<List<OfferDto>> getAvailableOffers() {
-        List<OfferDto> availableOffers = offerService.findAvailableOffers();
-        if (availableOffers.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(availableOffers);
-    }
-
-    @GetMapping("/sold")
-    public ResponseEntity<List<OfferDto>> getSoldOffers() {
-        List<OfferDto> soldOffers = offerService.findSoldOffers();
-        if (soldOffers.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(soldOffers);
-    }
-
-    private OfferDto applyPatch(OfferDto dto, JsonMergePatch patch) throws JsonPatchException, JsonProcessingException {
-        JsonNode offerNode = objectMapper.valueToTree(dto);
-        JsonNode offerPatched = patch.apply(offerNode);
-        return objectMapper.treeToValue(offerPatched, OfferDto.class);
     }
 
 }
