@@ -25,7 +25,6 @@ public class AuthController {
     public ResponseEntity<String> register(@Valid @RequestBody RegisterDto registerDto) {
         String result = authService.registerUser(registerDto);
         return new ResponseEntity<>(result, HttpStatus.OK);
-
     }
 
     @PostMapping("/login")

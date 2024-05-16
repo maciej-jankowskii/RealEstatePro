@@ -3,13 +3,11 @@ package com.realestate.controller;
 import com.realestate.model.credit.Credit;
 import com.realestate.service.CreditService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/credit")
+@RequestMapping("/api/credit")
+@CrossOrigin("*")
 public class CreditController {
 
     private final CreditService creditService;

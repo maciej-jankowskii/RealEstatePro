@@ -11,9 +11,10 @@ import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.RoleRepository;
 import com.realestate.repository.UserRepository;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
+
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
-import org.jetbrains.annotations.NotNull;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,7 @@ public class AuthService {
         this.validator = validator;
     }
 
-    public String registerUser(RegisterDto registerDto) {
+    public String registerUser(@Valid RegisterDto registerDto) {
         if (userRepository.existsByEmail(registerDto.getEmail())) {
             return "Email is taken!";
         }

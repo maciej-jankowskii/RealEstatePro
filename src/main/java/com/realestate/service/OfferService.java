@@ -96,12 +96,10 @@ public class OfferService {
         UserEmployee userEmployee = userRepository.findById(updateDto.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Property property = propertyRepository.findById(updateDto.getPropertyId()).orElseThrow(() -> new ResourceNotFoundException("Property not found"));
         Client client = clientRepository.findById(updateDto.getClientId()).orElseThrow(() -> new ResourceNotFoundException("Client not found"));
-        Reservation reservation = reservationRepository.findById(updateDto.getReservationId()).orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
 
         offer.setUser(userEmployee);
         offer.setProperty(property);
         offer.setClient(client);
-        offer.setReservation(reservation);
         offer.setIsBooked(updateDto.getIsBooked());
         offer.setIsAvailable(updateDto.getIsAvailable());
     }
