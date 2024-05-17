@@ -2,6 +2,7 @@ package com.realestate.controller;
 
 import com.realestate.dto.ClientDto;
 import com.realestate.service.ClientService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -38,7 +39,7 @@ public class ClientController {
     }
 
     @PostMapping
-    ResponseEntity<ClientDto> saveClient(@RequestBody ClientDto clientDto) {
+    ResponseEntity<ClientDto> saveClient(@RequestBody @Valid ClientDto clientDto) {
         ClientDto saved = clientService.saveClient(clientDto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -48,7 +49,7 @@ public class ClientController {
     }
 
     @PutMapping("/update-client/{id}")
-    public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody ClientDto dto) {
+    public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody @Valid ClientDto dto) {
         clientService.updateClient(id, dto);
         return ResponseEntity.noContent().build();
     }

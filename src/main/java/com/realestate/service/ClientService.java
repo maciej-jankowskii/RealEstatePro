@@ -7,6 +7,7 @@ import com.realestate.exceptions.ResourceNotFoundException;
 import com.realestate.mapper.ClientMapper;
 import com.realestate.model.client.Client;
 import com.realestate.repository.ClientRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +22,12 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
+    private final ValidationService validationService;
 
-    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper) {
+    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper, ValidationService validationService) {
         this.clientRepository = clientRepository;
         this.clientMapper = clientMapper;
+        this.validationService = validationService;
     }
 
     public ClientDto getClientById(Long id) {
@@ -43,15 +46,17 @@ public class ClientService {
     }
 
     @Transactional
-    public ClientDto saveClient(ClientDto clientDto) {
+    public ClientDto saveClient(@Valid ClientDto clientDto) {
         Client client = clientMapper.map(clientDto);
+        validationService.validateData(client);
         Client saved = clientRepository.save(client);
         return clientMapper.map(saved);
     }
 
     @Transactional
-    public void updateClient(Long id,ClientDto clientDto) {
+    public void updateClient(Long id,@Valid ClientDto clientDto) {
         Client client = clientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Client not found"));
+        validationService.validateData(client);
         updateClient(clientDto, client);
 
         clientRepository.save(client);
