@@ -1,6 +1,7 @@
 package com.realestate.controller;
 import com.realestate.dto.OfferDto;
 import com.realestate.service.OfferService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -21,7 +22,7 @@ public class OfferController {
     }
 
     @PostMapping
-    public ResponseEntity<OfferDto> saveOffer(@RequestBody OfferDto offerDto) {
+    public ResponseEntity<OfferDto> saveOffer(@RequestBody @Valid OfferDto offerDto) {
         OfferDto saved = offerService.saveOffer(offerDto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -58,7 +59,7 @@ public class OfferController {
     }
 
     @PutMapping("/update-offer/{id}")
-    public ResponseEntity<?> updateOffer(@PathVariable Long id, @RequestBody OfferDto updateDto) {
+    public ResponseEntity<?> updateOffer(@PathVariable Long id, @RequestBody @Valid OfferDto updateDto) {
         offerService.updateOffer(id, updateDto);
         return ResponseEntity.noContent().build();
     }

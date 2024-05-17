@@ -6,9 +6,9 @@ import com.realestate.mapper.OfferMapper;
 import com.realestate.model.Property.Property;
 import com.realestate.model.client.Client;
 import com.realestate.model.offer.Offer;
-import com.realestate.model.reservation.Reservation;
 import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.*;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,19 +27,22 @@ public class OfferService {
     private final ClientRepository clientRepository;
     private final ReservationRepository reservationRepository;
     private final OfferMapper offerMapper;
+    private final ValidationService validationService;
 
-    public OfferService(OffersRepository offersRepository, UserRepository userRepository, PropertyRepository propertyRepository, ClientRepository clientRepository, ReservationRepository reservationRepository, OfferMapper offerMapper) {
+    public OfferService(OffersRepository offersRepository, UserRepository userRepository, PropertyRepository propertyRepository, ClientRepository clientRepository, ReservationRepository reservationRepository, OfferMapper offerMapper, ValidationService validationService) {
         this.offersRepository = offersRepository;
         this.userRepository = userRepository;
         this.propertyRepository = propertyRepository;
         this.clientRepository = clientRepository;
         this.reservationRepository = reservationRepository;
         this.offerMapper = offerMapper;
+        this.validationService = validationService;
     }
 
     @Transactional
-    public OfferDto saveOffer(OfferDto offerDto){
+    public OfferDto saveOffer(@Valid OfferDto offerDto){
         Offer offer = offerMapper.map(offerDto);
+        validationService.validateData(offer);
         Offer saved = offersRepository.save(offer);
         return offerMapper.map(saved);
     }
@@ -82,8 +85,9 @@ public class OfferService {
 
 
     @Transactional
-    public void updateOffer(Long id, OfferDto updateDto){
+    public void updateOffer(Long id, @Valid OfferDto updateDto){
         Offer offer = offersRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Offer not found"));
+        validationService.validateData(offer);
         updateOffer(updateDto, offer);
         offersRepository.save(offer);
     }
