@@ -7,6 +7,7 @@ import com.realestate.model.offer.Offer;
 import com.realestate.model.reservation.Reservation;
 import com.realestate.repository.OffersRepository;
 import com.realestate.repository.ReservationRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,16 +23,19 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationMapper reservationMapper;
     private final OffersRepository offersRepository;
+    private final ValidationService validationService;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationMapper reservationMapper, OffersRepository offersRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ReservationMapper reservationMapper, OffersRepository offersRepository, ValidationService validationService) {
         this.reservationRepository = reservationRepository;
         this.reservationMapper = reservationMapper;
         this.offersRepository = offersRepository;
+        this.validationService = validationService;
     }
 
     @Transactional
-    public ReservationDto saveReservation(ReservationDto dto){
+    public ReservationDto saveReservation(@Valid ReservationDto dto){
         Reservation reservation = reservationMapper.map(dto);
+        validationService.validateData(reservation);
         Reservation saved = reservationRepository.save(reservation);
         Offer offer = offersRepository.findById(dto.getOfferId()).orElseThrow(() -> new ResourceNotFoundException("Offer not found"));
         offer.setIsBooked(true);
@@ -56,8 +59,9 @@ public class ReservationService {
         return dtos;
     }
     @Transactional
-    public void updateReservation(Long id, ReservationDto updateDto){
+    public void updateReservation(Long id, @Valid ReservationDto updateDto){
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Reservation not found"));
+        validationService.validateData(reservation);
         updateReservation(updateDto, reservation);
         reservationRepository.save(reservation);
     }

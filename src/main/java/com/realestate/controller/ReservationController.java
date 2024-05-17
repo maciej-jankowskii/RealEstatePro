@@ -2,6 +2,7 @@ package com.realestate.controller;
 
 import com.realestate.dto.ReservationDto;
 import com.realestate.service.ReservationService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,7 +23,7 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservationDto> saveReservation(@RequestBody ReservationDto reservationDto) {
+    public ResponseEntity<ReservationDto> saveReservation(@RequestBody @Valid ReservationDto reservationDto) {
         ReservationDto saved = reservationService.saveReservation(reservationDto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -56,7 +57,7 @@ public class ReservationController {
     }
 
     @PutMapping("/update-reservation/{id}")
-    public ResponseEntity<?> updateReservation(@PathVariable Long id, @RequestBody ReservationDto updateDto) {
+    public ResponseEntity<?> updateReservation(@PathVariable Long id, @RequestBody @Valid ReservationDto updateDto) {
         reservationService.updateReservation(id, updateDto);
         return ResponseEntity.noContent().build();
     }
