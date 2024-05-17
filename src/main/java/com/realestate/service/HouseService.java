@@ -9,6 +9,7 @@ import com.realestate.mapper.HouseMapper;
 import com.realestate.model.Property.House;
 import com.realestate.repository.HouseRepository;
 import com.realestate.repository.OffersRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,16 +25,19 @@ public class HouseService {
     private final HouseRepository houseRepository;
     private final HouseMapper houseMapper;
     private final OffersRepository offersRepository;
+    private final ValidationService validationService;
 
-    public HouseService(HouseRepository houseRepository, HouseMapper houseMapper, OffersRepository offersRepository) {
+    public HouseService(HouseRepository houseRepository, HouseMapper houseMapper, OffersRepository offersRepository, ValidationService validationService) {
         this.houseRepository = houseRepository;
         this.houseMapper = houseMapper;
         this.offersRepository = offersRepository;
+        this.validationService = validationService;
     }
 
     @Transactional
-    public HousePropertyDto saveHouse(HousePropertyDto dto) {
+    public HousePropertyDto saveHouse(@Valid HousePropertyDto dto) {
         House house = houseMapper.map(dto);
+        validationService.validateData(house);
         House saved = houseRepository.save(house);
         return houseMapper.map(saved);
     }
@@ -91,8 +95,9 @@ public class HouseService {
 //    }
 
     @Transactional
-    public void updateHouse(Long id, HousePropertyDto dto) {
+    public void updateHouse(Long id, @Valid HousePropertyDto dto) {
         House house = houseRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("House not found"));
+        validationService.validateData(house);
         updateHouse(dto, house);
         houseRepository.save(house);
     }
