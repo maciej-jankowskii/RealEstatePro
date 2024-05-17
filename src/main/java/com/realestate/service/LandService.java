@@ -8,6 +8,7 @@ import com.realestate.mapper.LandMapper;
 import com.realestate.model.Property.Land;
 import com.realestate.repository.LandRepository;
 import com.realestate.repository.OffersRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,16 +24,19 @@ public class LandService {
     private final LandRepository landRepository;
     private final LandMapper landMapper;
     private final OffersRepository offersRepository;
+    private final ValidationService validationService;
 
-    public LandService(LandRepository landRepository, LandMapper landMapper, OffersRepository offersRepository) {
+    public LandService(LandRepository landRepository, LandMapper landMapper, OffersRepository offersRepository, ValidationService validationService) {
         this.landRepository = landRepository;
         this.landMapper = landMapper;
         this.offersRepository = offersRepository;
+        this.validationService = validationService;
     }
 
     @Transactional
-    public LandPropertyDto saveLand(LandPropertyDto dto) {
+    public LandPropertyDto saveLand(@Valid LandPropertyDto dto) {
         Land land = landMapper.map(dto);
+        validationService.validateData(land);
         Land saved = landRepository.save(land);
         return landMapper.map(saved);
     }
@@ -72,8 +76,9 @@ public class LandService {
 //    }
 
     @Transactional
-    public void updateLand(Long id, LandPropertyDto dto) {
+    public void updateLand(Long id, @Valid LandPropertyDto dto) {
         Land land = landRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Land not found"));
+        validationService.validateData(land);
         updateLand(dto, land);
         landRepository.save(land);
     }

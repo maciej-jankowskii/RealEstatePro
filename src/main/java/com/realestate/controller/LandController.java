@@ -66,7 +66,7 @@ public class LandController {
 //    }
 
     @PutMapping("/update-land/{id}")
-    public ResponseEntity<?> updateLand(@PathVariable Long id, @RequestBody LandPropertyDto updateDto) {
+    public ResponseEntity<?> updateLand(@PathVariable Long id, @RequestBody @Valid LandPropertyDto updateDto) {
         landService.updateLand(id, updateDto);
         return ResponseEntity.noContent().build();
 
