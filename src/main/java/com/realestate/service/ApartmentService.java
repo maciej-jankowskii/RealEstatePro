@@ -91,8 +91,9 @@ public class ApartmentService {
     }
 
     @Transactional
-    public void updateApartment(Long id, ApartmentPropertyDto updateDto) {
+    public void updateApartment(Long id, @Valid ApartmentPropertyDto updateDto) {
         Apartment apartment = apartmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Apartment not found"));
+        validationService.validateData(apartment);
         updateApartment(updateDto, apartment);
         apartmentRepository.save(apartment);
     }

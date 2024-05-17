@@ -9,6 +9,7 @@ import com.realestate.mapper.CommercialMapper;
 import com.realestate.model.Property.CommercialProperty;
 import com.realestate.repository.CommercialRepository;
 import com.realestate.repository.OffersRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,16 +25,19 @@ public class CommercialService {
     private final CommercialRepository commercialRepository;
     private final CommercialMapper commercialMapper;
     private final OffersRepository offersRepository;
+    private final ValidationService validationService;
 
-    public CommercialService(CommercialRepository commercialRepository, CommercialMapper commercialMapper, OffersRepository offersRepository) {
+    public CommercialService(CommercialRepository commercialRepository, CommercialMapper commercialMapper, OffersRepository offersRepository, ValidationService validationService) {
         this.commercialRepository = commercialRepository;
         this.commercialMapper = commercialMapper;
         this.offersRepository = offersRepository;
+        this.validationService = validationService;
     }
 
     @Transactional
-    public CommercialPropertyDto saveCommercialProperty(CommercialPropertyDto dto) {
+    public CommercialPropertyDto saveCommercialProperty(@Valid CommercialPropertyDto dto) {
         CommercialProperty commercialProperty = commercialMapper.map(dto);
+        validationService.validateData(commercialProperty);
         CommercialProperty saved = commercialRepository.save(commercialProperty);
         return commercialMapper.map(saved);
     }
@@ -81,10 +85,10 @@ public class CommercialService {
 
 
     @Transactional
-    public void updateCommercialProperty(Long id, CommercialPropertyDto updateDto) {
+    public void updateCommercialProperty(Long id, @Valid CommercialPropertyDto updateDto) {
         CommercialProperty commercialProperty = commercialRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Commercial Property not found"));
+        validationService.validateData(commercialProperty);
         updateCommercialProperty(updateDto, commercialProperty);
-
         commercialRepository.save(commercialProperty);
     }
 

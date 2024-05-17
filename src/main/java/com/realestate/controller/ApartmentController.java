@@ -75,7 +75,7 @@ public class ApartmentController {
 //    }
 
     @PutMapping("/update-apartment/{id}")
-    public ResponseEntity<?> updateApartment(@PathVariable Long id, @RequestBody ApartmentPropertyDto updateDto) {
+    public ResponseEntity<?> updateApartment(@PathVariable Long id, @RequestBody @Valid ApartmentPropertyDto updateDto) {
         apartmentService.updateApartment(id, updateDto);
 
         return ResponseEntity.noContent().build();

@@ -69,7 +69,7 @@ public class CommercialPropertyController {
 //    }
 
     @PutMapping("/update-commercial/{id}")
-    public ResponseEntity<?> updateCommercialProperty(@PathVariable Long id, @RequestBody CommercialPropertyDto updateDto) {
+    public ResponseEntity<?> updateCommercialProperty(@PathVariable Long id, @RequestBody @Valid CommercialPropertyDto updateDto) {
         commercialService.updateCommercialProperty(id, updateDto);
         return ResponseEntity.noContent().build();
 
