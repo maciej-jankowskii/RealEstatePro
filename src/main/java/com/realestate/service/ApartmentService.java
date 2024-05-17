@@ -9,6 +9,7 @@ import com.realestate.mapper.ApartmentMapper;
 import com.realestate.model.Property.Apartment;
 import com.realestate.repository.ApartmentRepository;
 import com.realestate.repository.OffersRepository;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,16 +24,19 @@ public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
     private final ApartmentMapper apartmentMapper;
     private final OffersRepository offersRepository;
+    private final ValidationService validationService;
 
-    public ApartmentService(ApartmentRepository apartmentRepository, ApartmentMapper apartmentMapper, OffersRepository offersRepository) {
+    public ApartmentService(ApartmentRepository apartmentRepository, ApartmentMapper apartmentMapper, OffersRepository offersRepository, ValidationService validationService) {
         this.apartmentRepository = apartmentRepository;
         this.apartmentMapper = apartmentMapper;
         this.offersRepository = offersRepository;
+        this.validationService = validationService;
     }
 
     @Transactional
-    public ApartmentPropertyDto saveApartment(ApartmentPropertyDto apartmentDto) {
+    public ApartmentPropertyDto saveApartment(@Valid ApartmentPropertyDto apartmentDto) {
         Apartment apartment = apartmentMapper.map(apartmentDto);
+        validationService.validateData(apartment);
         Apartment saved = apartmentRepository.save(apartment);
         return apartmentMapper.map(saved);
     }

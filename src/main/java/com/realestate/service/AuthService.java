@@ -3,18 +3,13 @@ package com.realestate.service;
 import com.realestate.config.JWTGenerator;
 import com.realestate.dto.LoginDto;
 import com.realestate.dto.RegisterDto;
-import com.realestate.exceptions.RegistrationException;
 import com.realestate.exceptions.ResourceNotFoundException;
 import com.realestate.exceptions.UnauthorizedException;
 import com.realestate.model.user.Role;
 import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.RoleRepository;
 import com.realestate.repository.UserRepository;
-import jakarta.validation.ConstraintViolation;
-
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,13 +17,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
-
 import java.util.Collections;
-import java.util.Set;
 
 @Service
-@Validated
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -36,9 +27,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JWTGenerator jwtGenerator;
-    private final Validator validator;
+    private final ValidationService validator;
 
-    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator jwtGenerator, Validator validator) {
+    public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTGenerator jwtGenerator, ValidationService validator) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -53,7 +44,8 @@ public class AuthService {
         }
 
         UserEmployee user = createEmployee(registerDto);
-        checkCorrectRegisterData(user);
+
+        validator.validateData(user);
         userRepository.save(user);
 
         return "User registered successfully!";
@@ -65,15 +57,11 @@ public class AuthService {
         try {
             Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authenticate);
-            String token = jwtGenerator.generatedToken(authenticate);
-            return token;
+            return jwtGenerator.generatedToken(authenticate);
         } catch (AuthenticationException exception){
             throw new UnauthorizedException("Invalid data");
         }
     }
-
-
-
 
     /**
 
@@ -81,12 +69,6 @@ public class AuthService {
 
      **/
 
-    private void checkCorrectRegisterData(UserEmployee user) {
-        Set<ConstraintViolation<UserEmployee>> violationSet = validator.validate(user);
-        if (!violationSet.isEmpty()){
-            throw new RegistrationException("Invalid user data");
-        }
-    }
 
     private UserEmployee createEmployee(RegisterDto registerDto) {
         UserEmployee user = new UserEmployee();
