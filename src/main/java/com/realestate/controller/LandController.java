@@ -3,6 +3,7 @@ package com.realestate.controller;
 import com.realestate.dto.LandPropertyDto;
 import com.realestate.service.LandService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,13 +13,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/lands")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class LandController {
 
     private final LandService landService;
 
-    public LandController(LandService landService) {
-        this.landService = landService;
-    }
 
     @PostMapping
     public ResponseEntity<LandPropertyDto> saveLandProperty(@Valid @RequestBody LandPropertyDto dto) {
@@ -48,22 +47,6 @@ public class LandController {
         return ResponseEntity.ok(allLands);
     }
 
-//    @GetMapping("/filtered")
-//    public ResponseEntity<List<LandPropertyDto>> filterLands(
-//            @RequestParam(required = false) String address,
-//            @RequestParam(required = false) BigDecimal minPrice,
-//            @RequestParam(required = false) BigDecimal maxPrice,
-//            @RequestParam(required = false) String typeOfLand,
-//            @RequestParam(required = false) Double minArea,
-//            @RequestParam(required = false) Double maxArea,
-//            @RequestParam(required = false) Boolean buildingPermit
-//    ) {
-//        List<LandPropertyDto> filteredLands = landService.filterLands(
-//                address, minPrice, maxPrice,
-//                typeOfLand, minArea, maxArea, buildingPermit);
-//        return ResponseEntity.ok(filteredLands);
-//
-//    }
 
     @PutMapping("/update-land/{id}")
     public ResponseEntity<?> updateLand(@PathVariable Long id, @RequestBody @Valid LandPropertyDto updateDto) {

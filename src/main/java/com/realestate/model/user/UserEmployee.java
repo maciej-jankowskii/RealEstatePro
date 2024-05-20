@@ -20,15 +20,9 @@ public class UserEmployee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull
-    @Size(min = 1)
     private String firstName;
-    @NotNull
-    @Size(min = 1)
     private String lastName;
     @Column(unique = true)
-    @NotBlank(message = "E-mail address must not be empty")
-    @Email(message = "User must have valid email address")
     private String email;
     private String password;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

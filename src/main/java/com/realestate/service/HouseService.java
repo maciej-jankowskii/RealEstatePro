@@ -10,6 +10,7 @@ import com.realestate.model.Property.House;
 import com.realestate.repository.HouseRepository;
 import com.realestate.repository.OffersRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class HouseService {
 
     private final HouseRepository houseRepository;
@@ -27,12 +29,6 @@ public class HouseService {
     private final OffersRepository offersRepository;
     private final ValidationService validationService;
 
-    public HouseService(HouseRepository houseRepository, HouseMapper houseMapper, OffersRepository offersRepository, ValidationService validationService) {
-        this.houseRepository = houseRepository;
-        this.houseMapper = houseMapper;
-        this.offersRepository = offersRepository;
-        this.validationService = validationService;
-    }
 
     @Transactional
     public HousePropertyDto saveHouse(@Valid HousePropertyDto dto) {
@@ -49,50 +45,12 @@ public class HouseService {
     public List<HousePropertyDto> getAllHouses(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<House> housePage = houseRepository.findAll(pageable);
-        List<HousePropertyDto> houseDtos = housePage.getContent().stream()
+        return housePage.getContent().stream()
                 .map(houseMapper::map)
                 .collect(Collectors.toList());
-        return houseDtos;
     }
 
-//    public List<HousePropertyDto> filterHouses(
-//            String address,
-//            BigDecimal minPrice,
-//            BigDecimal maxPrice,
-//            Double minLandArea,
-//            Double maxLandArea,
-//            Double minHouseArea,
-//            Double maxHouseArea,
-//            Integer rooms,
-//            Integer bathrooms,
-//            Boolean balcony,
-//            Boolean garage,
-//            Boolean twoStoryHouse,
-//            String buildingType,
-//            Integer minYearOfConstruction,
-//            String standard
-//    ) {
-//        List<House> allHouses = (List<House>) houseRepository.findAll();
-//        return allHouses.stream()
-//                .filter(house -> (address == null || house.getAddress().contains(address))
-//                        && (minPrice == null || house.getPrice().compareTo(minPrice) >= 0)
-//                        && (maxPrice == null || house.getPrice().compareTo(maxPrice) <= 0)
-//                        && (minLandArea == null || house.getLandArea() >= minLandArea)
-//                        && (maxLandArea == null || house.getLandArea() <= maxLandArea)
-//                        && (minHouseArea == null || house.getHouseArea() >= minHouseArea)
-//                        && (maxHouseArea == null || house.getHouseArea() <= maxHouseArea)
-//                        && (rooms == null || house.getRooms().equals(rooms))
-//                        && (bathrooms == null || house.getBathrooms().equals(bathrooms))
-//                        && (balcony == null || house.getBalcony().equals(balcony))
-//                        && (garage == null || house.getGarage().equals(garage))
-//                        && (twoStoryHouse == null || house.getTwoStoryHouse().equals(twoStoryHouse))
-//                        && (buildingType == null || house.getBuildingType().name().equals(buildingType))
-//                        && (minYearOfConstruction == null || house.getYearOfConstruction() >= minYearOfConstruction)
-//                        && (standard == null || house.getStandard().name().equals(standard))
-//                )
-//                .map(houseMapper::map)
-//                .collect(Collectors.toList());
-//    }
+
 
     @Transactional
     public void updateHouse(Long id, @Valid HousePropertyDto dto) {

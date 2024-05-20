@@ -8,6 +8,7 @@ import com.realestate.mapper.ClientMapper;
 import com.realestate.model.client.Client;
 import com.realestate.repository.ClientRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,17 +19,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ClientService {
 
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
     private final ValidationService validationService;
 
-    public ClientService(ClientRepository clientRepository, ClientMapper clientMapper, ValidationService validationService) {
-        this.clientRepository = clientRepository;
-        this.clientMapper = clientMapper;
-        this.validationService = validationService;
-    }
 
     public ClientDto getClientById(Long id) {
         return clientRepository.findById(id).map(clientMapper::map)
@@ -39,10 +36,10 @@ public class ClientService {
     public List<ClientDto> getAllClients(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Client> clientPage = clientRepository.findAll(pageable);
-        List<ClientDto> dtos = clientPage.getContent().stream()
+        return clientPage.getContent().stream()
                 .map(clientMapper::map)
                 .collect(Collectors.toList());
-        return  dtos;
+
     }
 
     @Transactional

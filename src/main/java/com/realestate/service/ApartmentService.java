@@ -10,6 +10,7 @@ import com.realestate.model.Property.Apartment;
 import com.realestate.repository.ApartmentRepository;
 import com.realestate.repository.OffersRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
@@ -26,12 +28,6 @@ public class ApartmentService {
     private final OffersRepository offersRepository;
     private final ValidationService validationService;
 
-    public ApartmentService(ApartmentRepository apartmentRepository, ApartmentMapper apartmentMapper, OffersRepository offersRepository, ValidationService validationService) {
-        this.apartmentRepository = apartmentRepository;
-        this.apartmentMapper = apartmentMapper;
-        this.offersRepository = offersRepository;
-        this.validationService = validationService;
-    }
 
     @Transactional
     public ApartmentPropertyDto saveApartment(@Valid ApartmentPropertyDto apartmentDto) {
@@ -46,48 +42,13 @@ public class ApartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Apartment not found"));
     }
 
-//    public List<ApartmentPropertyDto> filterApartments(String address,
-//                                                       BigDecimal maxPrice,
-//                                                       Double minArea,
-//                                                       Double maxArea,
-//                                                       Integer rooms,
-//                                                       Integer bathrooms,
-//                                                       Boolean duplexApartment,
-//                                                       String buildingType,
-//                                                       Integer maxFloor,
-//                                                       Boolean elevator,
-//                                                       Boolean balcony,
-//                                                       Boolean garage,
-//                                                       Integer minYearOfConstruction,
-//                                                       String standard) {
-//        List<Apartment> allApartments = (List<Apartment>) apartmentRepository.findAll();
-//
-//        return allApartments.stream()
-//                .filter(apartment -> (address == null || apartment.getAddress().contains(address))
-//                        && (maxPrice == null || apartment.getPrice().compareTo(maxPrice) <= 0)
-//                        && (minArea == null || apartment.getArea() >= minArea)
-//                        && (maxArea == null || apartment.getArea() <= maxArea)
-//                        && (rooms == null || apartment.getRooms().equals(rooms))
-//                        && (bathrooms == null || apartment.getBathrooms().equals(bathrooms))
-//                        && (duplexApartment == null || apartment.getDuplexApartment().equals(duplexApartment))
-//                        && (buildingType == null || apartment.getBuildingType().name().equals(buildingType))
-//                        && (maxFloor == null || apartment.getFloor() <= maxFloor)
-//                        && (elevator == null || apartment.getElevator().equals(elevator))
-//                        && (balcony == null || apartment.getBalcony().equals(balcony))
-//                        && (garage == null || apartment.getGarage().equals(garage))
-//                        && (minYearOfConstruction == null || apartment.getYearOfConstruction() >= minYearOfConstruction)
-//                        && (standard == null || apartment.getStandard().name().equals(standard)))
-//                .map(apartmentMapper::map)
-//                .collect(Collectors.toList());
-//    }
 
     public List<ApartmentPropertyDto> getAllApartments(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Apartment> apartmentsPage = apartmentRepository.findAll(pageable);
-        List<ApartmentPropertyDto> apartmentDtos = apartmentsPage.getContent().stream()
+        return apartmentsPage.getContent().stream()
                 .map(apartmentMapper::map)
                 .collect(Collectors.toList());
-        return apartmentDtos;
     }
 
     @Transactional

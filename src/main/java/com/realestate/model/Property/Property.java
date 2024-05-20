@@ -19,7 +19,6 @@ public class Property {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
     private String address;
     @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;

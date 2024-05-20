@@ -194,25 +194,11 @@
             <column name="property_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="reservation_id" type="BIGINT">
-                <constraints unique="true" nullable="true"/>
-            </column>
             <column name="is_booked" type="BOOLEAN"/>
             <column name="is_available" type="BOOLEAN"/>
         </createTable>
     </changeSet>
 
-    <changeSet id="014" author="maciej-jankowski">
-        <createTable tableName="reservation">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="description" type="VARCHAR(255)"/>
-            <column name="offer_id" type="BIGINT">
-                <constraints nullable="true"/>
-            </column>
-        </createTable>
-    </changeSet>
 
     <changeSet id="015" author="maciej-jankowski">
         <addForeignKeyConstraint baseTableName="offer" baseColumnNames="user_id" constraintName="fk_offer_user"
@@ -223,9 +209,7 @@
                                  referencedTableName="property" referencedColumnNames="id"/>
     </changeSet>
 
-    <changeSet id="016" author="maciej-jankowski">
-        <addForeignKeyConstraint baseTableName="reservation" baseColumnNames="offer_id"
-                                 constraintName="fk_reservation_offer" referencedTableName="offer"
-                                 referencedColumnNames="id"/>
-    </changeSet>
+
+
+
 </databaseChangeLog>

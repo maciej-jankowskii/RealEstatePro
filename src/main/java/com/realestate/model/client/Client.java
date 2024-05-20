@@ -17,15 +17,9 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
     private String firstName;
-    @NotBlank
     private String lastName;
-    @NotBlank
-    @Size(min = 9)
     private String telephone;
-    @NotBlank
-    @Email
     private String email;
     @OneToMany(mappedBy = "client")
     private List<Offer> offers = new ArrayList<>();

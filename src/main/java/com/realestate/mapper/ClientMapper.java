@@ -4,17 +4,16 @@ import com.realestate.dto.ClientDto;
 import com.realestate.model.client.Client;
 import com.realestate.model.offer.Offer;
 import com.realestate.repository.OffersRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ClientMapper {
     private final OffersRepository offersRepository;
 
-    public ClientMapper(OffersRepository offersRepository) {
-        this.offersRepository = offersRepository;
-    }
 
 
     public ClientDto map(Client client) {

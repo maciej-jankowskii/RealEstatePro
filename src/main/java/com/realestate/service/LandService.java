@@ -9,6 +9,7 @@ import com.realestate.model.Property.Land;
 import com.realestate.repository.LandRepository;
 import com.realestate.repository.OffersRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class LandService {
 
     private final LandRepository landRepository;
@@ -26,12 +28,6 @@ public class LandService {
     private final OffersRepository offersRepository;
     private final ValidationService validationService;
 
-    public LandService(LandRepository landRepository, LandMapper landMapper, OffersRepository offersRepository, ValidationService validationService) {
-        this.landRepository = landRepository;
-        this.landMapper = landMapper;
-        this.offersRepository = offersRepository;
-        this.validationService = validationService;
-    }
 
     @Transactional
     public LandPropertyDto saveLand(@Valid LandPropertyDto dto) {
@@ -48,32 +44,12 @@ public class LandService {
     public List<LandPropertyDto> getAllLands(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Land> landPage = landRepository.findAll(pageable);
-        List<LandPropertyDto> dtos = landPage.getContent().stream()
+        return landPage.getContent().stream()
                 .map(landMapper::map)
                 .collect(Collectors.toList());
-        return dtos;
+
     }
 
-//    public List<LandPropertyDto> filterLands(
-//            String address,
-//            BigDecimal minPrice,
-//            BigDecimal maxPrice,
-//            String typeOfLand,
-//            Double minArea,
-//            Double maxArea,
-//            Boolean buildingPermit
-//    ) {
-//        List<Land> allLands = (List<Land>) landRepository.findAll();
-//        return allLands.stream().filter(land -> (address == null || land.getAddress().contains(address))
-//                        && (minPrice == null || land.getPrice().compareTo(minPrice) >= 0)
-//                        && (maxPrice == null || land.getPrice().compareTo(maxPrice) <= 0)
-//                        && (typeOfLand == null || land.getTypeOfLand().name().equals(typeOfLand))
-//                        && (minArea == null || land.getArea() >= minArea)
-//                        && (maxArea == null || land.getArea() <= maxArea)
-//                        && (buildingPermit == null || land.getBuildingPermit().equals(buildingPermit)))
-//                .map(landMapper::map)
-//                .collect(Collectors.toList());
-//    }
 
     @Transactional
     public void updateLand(Long id, @Valid LandPropertyDto dto) {

@@ -1,11 +1,8 @@
 package com.realestate.service;
 
-import com.realestate.dto.ReservationDto;
-import com.realestate.mapper.ReservationMapper;
 import com.realestate.model.offer.Offer;
 import com.realestate.model.reservation.Reservation;
 import com.realestate.repository.OffersRepository;
-import com.realestate.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

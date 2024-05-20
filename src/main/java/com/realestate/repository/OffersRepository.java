@@ -14,7 +14,6 @@ public interface OffersRepository extends CrudRepository<Offer, Long> {
 
     List<Offer> findAllByClient_Id(Long id);
 
-    Optional<Offer> findByReservation_Id(Long reservationId);
     boolean existsByPropertyId(Long propertyId);
 
     Optional<Offer> findById(Long id);

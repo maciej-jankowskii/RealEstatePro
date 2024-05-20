@@ -2,6 +2,7 @@ package com.realestate.controller;
 import com.realestate.dto.OfferDto;
 import com.realestate.service.OfferService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,13 +14,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/offers")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class OfferController {
 
     private final OfferService offerService;
 
-    public OfferController(OfferService offerService) {
-        this.offerService = offerService;
-    }
 
     @PostMapping
     public ResponseEntity<OfferDto> saveOffer(@RequestBody @Valid OfferDto offerDto) {

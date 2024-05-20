@@ -5,6 +5,7 @@ import com.realestate.dto.LoginDto;
 import com.realestate.dto.RegisterDto;
 import com.realestate.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,18 +14,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterDto registerDto) {
-        String result = authService.registerUser(registerDto);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDto registerDto) {
+        authService.registerUser(registerDto);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")

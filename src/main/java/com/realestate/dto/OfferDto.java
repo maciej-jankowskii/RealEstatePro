@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 public class OfferDto {
     private Long id;
-    @NotNull(message = "You have to choose employee ID")
+    @NotNull(message = "You have to choose employee")
     private Long userId;
-    @NotNull(message = "You have to choose client ID")
+    @NotNull(message = "You have to choose client")
     private Long clientId;
-    @NotNull(message = "You have to choose property ID")
+    @NotNull(message = "You have to choose property")
     private Long propertyId;
     private Long reservationId;
     private Boolean isBooked;

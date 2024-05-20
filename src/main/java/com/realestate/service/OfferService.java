@@ -9,6 +9,7 @@ import com.realestate.model.offer.Offer;
 import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.*;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,30 +20,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OfferService {
 
     private final OffersRepository offersRepository;
     private final UserRepository userRepository;
     private  final PropertyRepository propertyRepository;
     private final ClientRepository clientRepository;
-    private final ReservationRepository reservationRepository;
     private final OfferMapper offerMapper;
     private final ValidationService validationService;
 
-    public OfferService(OffersRepository offersRepository, UserRepository userRepository, PropertyRepository propertyRepository, ClientRepository clientRepository, ReservationRepository reservationRepository, OfferMapper offerMapper, ValidationService validationService) {
-        this.offersRepository = offersRepository;
-        this.userRepository = userRepository;
-        this.propertyRepository = propertyRepository;
-        this.clientRepository = clientRepository;
-        this.reservationRepository = reservationRepository;
-        this.offerMapper = offerMapper;
-        this.validationService = validationService;
-    }
 
     @Transactional
     public OfferDto saveOffer(@Valid OfferDto offerDto){
         Offer offer = offerMapper.map(offerDto);
         validationService.validateData(offer);
+        offer.setIsAvailable(true);
         Offer saved = offersRepository.save(offer);
         return offerMapper.map(saved);
     }
@@ -53,15 +46,15 @@ public class OfferService {
 
     public List<OfferDto> getOffersByClient(Long clientId){
         List<Offer> offers = offersRepository.findAllByClient_Id(clientId);
-        List<OfferDto> dtos = offers.stream().map(offerMapper::map).collect(Collectors.toList());
-        return dtos;
+        return offers.stream().map(offerMapper::map).collect(Collectors.toList());
+
     }
 
     public List<OfferDto> getAllOffers(int page, int size){
         Pageable pageable = PageRequest.of(page, size);
         Page<Offer> offerPage = offersRepository.findAll(pageable);
-        List<OfferDto> dtos = offerPage.getContent().stream().map(offerMapper::map).collect(Collectors.toList());
-        return dtos;
+        return offerPage.getContent().stream().map(offerMapper::map).collect(Collectors.toList());
+
     }
 
     public void markOfferAsSold(Long offerId){
@@ -72,14 +65,13 @@ public class OfferService {
 
     public List<OfferDto> findAvailableOffers(){
         List<Offer> offers = (List<Offer>) offersRepository.findAll();
-        List<OfferDto> availableOffers = offers.stream().filter(Offer::getIsAvailable).map(offerMapper::map).collect(Collectors.toList());
-        return availableOffers;
+        return offers.stream().filter(Offer::getIsAvailable).map(offerMapper::map).collect(Collectors.toList());
+
     }
 
     public List<OfferDto> findSoldOffers(){
         List<Offer> offers = (List<Offer>) offersRepository.findAll();
-        List<OfferDto> soldOffers = offers.stream().filter(offer -> !offer.getIsAvailable()).map(offerMapper::map).collect(Collectors.toList());
-        return soldOffers;
+        return offers.stream().filter(offer -> !offer.getIsAvailable()).map(offerMapper::map).collect(Collectors.toList());
     }
 
 

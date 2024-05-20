@@ -8,24 +8,18 @@ import com.realestate.model.offer.Offer;
 import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.ClientRepository;
 import com.realestate.repository.PropertyRepository;
-import com.realestate.repository.ReservationRepository;
 import com.realestate.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class OfferMapper {
 
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
     private final ClientRepository clientRepository;
-    private final ReservationRepository reservationRepository;
 
-    public OfferMapper(PropertyRepository propertyRepository, UserRepository userRepository, ClientRepository clientRepository, ReservationRepository reservationRepository) {
-        this.propertyRepository = propertyRepository;
-        this.userRepository = userRepository;
-        this.clientRepository = clientRepository;
-        this.reservationRepository = reservationRepository;
-    }
 
     public OfferDto map(Offer offer) {
         OfferDto dto = new OfferDto();
@@ -35,6 +29,7 @@ public class OfferMapper {
         dto.setUserId(offer.getUser().getId());
         dto.setIsBooked(offer.getIsBooked());
         dto.setIsAvailable(offer.getIsAvailable());
+
         return dto;
     }
 
@@ -49,6 +44,7 @@ public class OfferMapper {
         offer.setUser(userEmployee);
         offer.setIsBooked(dto.getIsBooked());
         offer.setIsAvailable(dto.getIsAvailable());
+
         return offer;
     }
 

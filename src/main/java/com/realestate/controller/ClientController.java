@@ -3,6 +3,7 @@ package com.realestate.controller;
 import com.realestate.dto.ClientDto;
 import com.realestate.service.ClientService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -13,14 +14,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/clients")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class ClientController {
 
     private final ClientService clientService;
 
-
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
-    }
 
     @GetMapping("/{id}")
     ResponseEntity<ClientDto> getClientById(@PathVariable Long id) {

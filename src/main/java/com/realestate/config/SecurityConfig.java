@@ -1,5 +1,6 @@
 package com.realestate.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,15 +17,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailService customUserDetailService;
+
     private final JWTAuthEntryPoint authEntryPoint;
 
-    public SecurityConfig(CustomUserDetailService customUserDetailService, JWTAuthEntryPoint authEntryPoint) {
-        this.customUserDetailService = customUserDetailService;
-        this.authEntryPoint = authEntryPoint;
-    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -3,6 +3,7 @@ package com.realestate.controller;
 import com.realestate.dto.HousePropertyDto;
 import com.realestate.service.HouseService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -12,14 +13,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/houses")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class HouseController {
 
     private final HouseService houseService;
 
-    public HouseController(HouseService houseService) {
-        this.houseService = houseService;
-
-    }
 
     @PostMapping
     public ResponseEntity<HousePropertyDto> saveHouse(@Valid @RequestBody HousePropertyDto dto) {
@@ -49,32 +47,6 @@ public class HouseController {
         return ResponseEntity.ok(allHouses);
     }
 
-//    @GetMapping("/filtered")
-//    public ResponseEntity<List<HousePropertyDto>> filterHouses(
-//            @RequestParam(required = false) String address,
-//            @RequestParam(required = false) BigDecimal minPrice,
-//            @RequestParam(required = false) BigDecimal maxPrice,
-//            @RequestParam(required = false) Double minLandArea,
-//            @RequestParam(required = false) Double maxLandArea,
-//            @RequestParam(required = false) Double minHouseArea,
-//            @RequestParam(required = false) Double maxHouseArea,
-//            @RequestParam(required = false) Integer rooms,
-//            @RequestParam(required = false) Integer bathrooms,
-//            @RequestParam(required = false) Boolean balcony,
-//            @RequestParam(required = false) Boolean garage,
-//            @RequestParam(required = false) Boolean twoStoryHouse,
-//            @RequestParam(required = false) String buildingType,
-//            @RequestParam(required = false) Integer minYearOfConstruction,
-//            @RequestParam(required = false) String standard
-//    ) {
-//        List<HousePropertyDto> filteredHouses = houseService.filterHouses(
-//                address, minPrice, maxPrice,
-//                minLandArea, maxLandArea, minHouseArea,
-//                maxHouseArea, rooms, bathrooms, balcony,
-//                garage, twoStoryHouse, buildingType,
-//                minYearOfConstruction, standard);
-//        return ResponseEntity.ok(filteredHouses);
-//    }
 
     @PutMapping("/update-house/{id}")
     public ResponseEntity<?> updateHouse(@PathVariable Long id, @RequestBody @Valid HousePropertyDto updateDto) {
