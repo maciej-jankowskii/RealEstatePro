@@ -12,8 +12,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ClientMapper {
-    private final OffersRepository offersRepository;
 
+    private final OffersRepository offersRepository;
 
 
     public ClientDto map(Client client) {

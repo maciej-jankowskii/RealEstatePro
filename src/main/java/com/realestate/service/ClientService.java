@@ -70,7 +70,7 @@ public class ClientService {
 
     /**
 
-     HELPER METHODS FOR REGISTER
+     HELPER METHODS FOR UPDATE
 
      **/
 

@@ -1,6 +1,5 @@
 package com.realestate.controller;
 
-import com.realestate.dto.ApartmentPropertyDto;
 import com.realestate.dto.EmployeeDto;
 import com.realestate.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,8 @@ import java.util.List;
 @CrossOrigin("*")
 @RequiredArgsConstructor
 public class EmployeeController {
-    private final EmployeeService employeeService;
 
+    private final EmployeeService employeeService;
 
 
     @GetMapping("")

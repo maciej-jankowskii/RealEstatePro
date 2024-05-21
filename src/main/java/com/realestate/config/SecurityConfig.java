@@ -24,7 +24,6 @@ public class SecurityConfig {
     private final JWTAuthEntryPoint authEntryPoint;
 
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
@@ -37,10 +36,17 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
-                .requestMatchers("/swagger-ui/**", "/api/v1/auth/**", "/v2/api-docs",
-                        "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
-                        "/swagger-resources/**", "/configuration/ui", "/configuration/security",
-                        "/webjars/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/swagger-ui/**",
+                        "/api/v1/auth/**",
+                        "/v2/api-docs",
+                        "/v3/api-docs",
+                        "/v3/api-docs/**",
+                        "/swagger-resources",
+                        "/swagger-resources/**",
+                        "/configuration/ui",
+                        "/configuration/security",
+                        "/webjars/**",
+                        "/swagger-ui.html").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated());
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

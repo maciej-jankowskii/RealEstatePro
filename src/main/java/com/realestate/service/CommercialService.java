@@ -73,6 +73,13 @@ public class CommercialService {
     }
 
 
+    /**
+
+     HELPER METHODS FOR UPDATE
+
+     **/
+
+
     private static void updateCommercialProperty(CommercialPropertyDto updateDto, CommercialProperty commercialProperty) {
         commercialProperty.setAddress(updateDto.getAddress());
         commercialProperty.setPrice(updateDto.getPrice());

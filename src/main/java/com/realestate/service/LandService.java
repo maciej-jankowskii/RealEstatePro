@@ -70,6 +70,13 @@ public class LandService {
     }
 
 
+    /**
+
+     HELPER METHODS FOR UPDATE
+
+     **/
+
+
     private static void updateLand(LandPropertyDto dto, Land land) {
         land.setAddress(dto.getAddress());
         land.setPrice(dto.getPrice());

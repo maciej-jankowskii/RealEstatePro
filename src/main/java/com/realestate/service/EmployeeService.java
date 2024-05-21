@@ -1,9 +1,7 @@
 package com.realestate.service;
 
 import com.realestate.dto.EmployeeDto;
-import com.realestate.dto.OfferDto;
 import com.realestate.mapper.EmployeeMapper;
-import com.realestate.model.offer.Offer;
 import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

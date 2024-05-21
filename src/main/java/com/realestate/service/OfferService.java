@@ -88,6 +88,13 @@ public class OfferService {
         offersRepository.deleteById(id);
     }
 
+
+    /**
+
+     HELPER METHODS FOR UPDATE
+
+     **/
+
     private void updateOffer(OfferDto updateDto, Offer offer) {
         UserEmployee userEmployee = userRepository.findById(updateDto.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Property property = propertyRepository.findById(updateDto.getPropertyId()).orElseThrow(() -> new ResourceNotFoundException("Property not found"));

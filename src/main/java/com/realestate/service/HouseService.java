@@ -68,6 +68,11 @@ public class HouseService {
         houseRepository.deleteById(id);
     }
 
+    /**
+
+     HELPER METHODS FOR UPDATE
+
+     **/
 
 
     private static void updateHouse(HousePropertyDto dto, House house) {

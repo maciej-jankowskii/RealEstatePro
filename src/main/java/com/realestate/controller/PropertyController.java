@@ -3,12 +3,10 @@ package com.realestate.controller;
 import com.realestate.dto.PropertyDto;
 import com.realestate.service.PropertyService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/properties")
@@ -42,7 +40,5 @@ public class PropertyController {
         }
         return ResponseEntity.ok(properties);
     }
-
-
 
 }

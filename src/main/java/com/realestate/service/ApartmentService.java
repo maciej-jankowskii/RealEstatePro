@@ -73,7 +73,7 @@ public class ApartmentService {
 
     /**
 
-     HELPER METHODS FOR REGISTER
+     HELPER METHODS FOR UPDATE
 
      **/
 

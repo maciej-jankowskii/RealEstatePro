@@ -23,6 +23,4 @@ public class ValidationService {
             throw new ValidationException("Invalid data: " + violations);
         }
     }
-
-
 }

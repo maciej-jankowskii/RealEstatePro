@@ -15,6 +15,7 @@ import java.util.List;
 @CrossOrigin("*")
 @RequiredArgsConstructor
 public class CommercialPropertyController {
+
     private final CommercialService commercialService;
 
 

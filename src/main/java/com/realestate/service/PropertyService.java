@@ -3,7 +3,6 @@ package com.realestate.service;
 import com.realestate.dto.PropertyDto;
 import com.realestate.mapper.PropertyMapper;
 import com.realestate.model.Property.Property;
-import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.PropertyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +34,5 @@ public class PropertyService {
                 .map(propertyMapper::map)
                 .collect(Collectors.toList());
     }
-
-
 
 }
