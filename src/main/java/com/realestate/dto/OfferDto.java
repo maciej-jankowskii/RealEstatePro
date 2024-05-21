@@ -14,7 +14,6 @@ public class OfferDto {
     private Long clientId;
     @NotNull(message = "You have to choose property")
     private Long propertyId;
-    private Long reservationId;
     private Boolean isBooked;
     private Boolean isAvailable;
 }
