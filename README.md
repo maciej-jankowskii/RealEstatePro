@@ -13,7 +13,7 @@ Clone the project to Your local repository.
 Remember to create a database schema locally and configure the 'application.yml' file before running it. You should provide your own credentials in that file.
 
 ```bash
-  git clone https://github.com/maciej-jankowskii/real-estate
+  git clone https://github.com/maciej-jankowskii/estateese-backend
 ```
 
 Download Postman from the official website. It is a tool that will allow you to test my application's endpoints.
