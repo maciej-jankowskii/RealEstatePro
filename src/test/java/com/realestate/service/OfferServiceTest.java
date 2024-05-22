@@ -1,15 +1,25 @@
 package com.realestate.service;
 
 import com.realestate.dto.OfferDto;
+import com.realestate.exceptions.ResourceNotFoundException;
 import com.realestate.mapper.OfferMapper;
+import com.realestate.model.Property.Property;
 import com.realestate.model.client.Client;
 import com.realestate.model.offer.Offer;
+import com.realestate.model.user.UserEmployee;
+import com.realestate.repository.ClientRepository;
 import com.realestate.repository.OffersRepository;
+import com.realestate.repository.PropertyRepository;
+import com.realestate.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,8 +34,15 @@ class OfferServiceTest {
 
     @Mock
     private OffersRepository offersRepository;
+
     @Mock
     private OfferMapper offerMapper;
+    @Mock
+    private ValidationService validationService;
+    @Mock private UserRepository userRepository;
+    @Mock private PropertyRepository propertyRepository;
+    @Mock private ClientRepository clientRepository;
+
     @InjectMocks
     private OfferService offerService;
 
@@ -35,23 +52,44 @@ class OfferServiceTest {
     }
 
     @Test
-    public void testSaveOffer() {
-        OfferDto dto = new OfferDto();
+    void saveOffer_ValidDto_ShouldSaveOfferAndReturnDto() {
+
+        OfferDto inputDto = new OfferDto();
         Offer offer = new Offer();
+        Offer savedOffer = new Offer();
+        OfferDto expectedDto = new OfferDto();
 
-        when(offerMapper.map(dto)).thenReturn(offer);
-        when(offersRepository.save(offer)).thenReturn(offer);
-        when(offerMapper.map(offer)).thenReturn(dto);
+        when(offerMapper.map(inputDto)).thenReturn(offer);
+        when(offersRepository.save(offer)).thenReturn(savedOffer);
+        when(offerMapper.map(savedOffer)).thenReturn(expectedDto);
+        doNothing().when(validationService).validateData(any());
 
-        OfferDto result = offerService.saveOffer(dto);
+        OfferDto resultDto = offerService.saveOffer(inputDto);
 
-        assertEquals(dto, result);
-        assertNotNull(result);
-
+        assertNotNull(resultDto);
+        assertEquals(expectedDto, resultDto);
+        verify(offerMapper, times(1)).map(inputDto);
+        verify(offersRepository, times(1)).save(offer);
+        verify(offerMapper, times(1)).map(savedOffer);
+        verify(validationService, times(1)).validateData(any());
     }
 
     @Test
-    public void testGetOfferById() {
+    void saveOffer_InvalidDto_ShouldThrowException() {
+        OfferDto invalidDto = new OfferDto();
+        invalidDto.setUserId(null);
+
+        when(offerMapper.map(invalidDto)).thenReturn(new Offer());
+        doThrow(DataIntegrityViolationException.class).when(offersRepository).save(any());
+
+        assertThrows(DataIntegrityViolationException.class, () -> offerService.saveOffer(invalidDto));
+
+        verify(offerMapper, times(1)).map(invalidDto);
+        verify(offersRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void getOfferById_ShouldFindOffer() {
         OfferDto dto = new OfferDto();
         Offer offer = new Offer();
         Long offerId = 1L;
@@ -59,16 +97,14 @@ class OfferServiceTest {
         when(offersRepository.findById(offerId)).thenReturn(Optional.of(offer));
         when(offerMapper.map(offer)).thenReturn(dto);
 
-        Optional<OfferDto> resultOffer = offerService.getOfferById(offerId);
+        OfferDto result = offerService.getOfferById(offerId);
 
-        assertTrue(resultOffer.isPresent());
-        assertEquals(dto, resultOffer.get());
-
+        assertEquals(dto, result);
     }
 
     @Test
-    public void testGetOffersByClient() {
-        Client client = new Client();
+    public void getOffersByClient_ShouldFindOffers() {
+
         Offer offer = new Offer();
         OfferDto dto = new OfferDto();
         Long clientId = 1L;
@@ -76,33 +112,38 @@ class OfferServiceTest {
         when(offersRepository.findAllByClient_Id(clientId)).thenReturn(Collections.singletonList(offer));
         when(offerMapper.map(offer)).thenReturn(dto);
 
-        List<OfferDto> offersByClient = offerService.getOffersByClient(clientId);
+        List<OfferDto> result = offerService.getOffersByClient(clientId);
 
-        assertNotNull(offersByClient);
-        assertEquals(1, offersByClient.size());
-        assertEquals(dto, offersByClient.get(0));
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(dto, result.get(0));
     }
 
     @Test
-    public void testGetAllOffers() {
-        List<Offer> offers = new ArrayList<>();
-        List<OfferDto> dtos = new ArrayList<>();
-        offers.add(new Offer());
-        offers.add(new Offer());
-        dtos.add(new OfferDto());
-        dtos.add(new OfferDto());
+    void getAllOffers_ShouldFindAllOffers() {
 
-        when(offersRepository.findAll()).thenReturn(offers);
-        when(offerMapper.map(any(Offer.class))).thenReturn(dtos.get(0), dtos.get(1));
+        int page = 0;
+        int size = 10;
+        List<Offer> offerList = new ArrayList<>();
+        offerList.add(new Offer());
+        offerList.add(new Offer());
+        Page<Offer> offerPage = new PageImpl<>(offerList);
+        when(offersRepository.findAll(any(Pageable.class))).thenReturn(offerPage);
 
-        List<OfferDto> allOffers = offerService.getAllOffers();
+        List<OfferDto> offerDtoList = new ArrayList<>();
+        offerDtoList.add(new OfferDto());
+        offerDtoList.add(new OfferDto());
+        when(offerMapper.map(any(Offer.class))).thenReturn(new OfferDto());
 
-        assertNotNull(allOffers);
-        assertEquals(dtos, allOffers);
+        List<OfferDto> result = offerService.getAllOffers(page, size);
+
+        assertNotNull(result);
+
+        verify(offersRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
-    public void testMarkOfferAsSold() {
+    public void markOfferAsSold_ShouldMarkOfferAsSold() {
         Offer offer = new Offer();
         Long offerId = 1L;
         offer.setIsAvailable(true);
@@ -116,49 +157,71 @@ class OfferServiceTest {
     }
 
     @Test
-    public void testFindAvailableOffers() {
+    public void findAvailableOffers_ShouldFindAvailableOffers() {
         List<Offer> offers = createOfferList();
         List<OfferDto> dtoOffers = createDtoOfferList();
 
         when(offersRepository.findAll()).thenReturn(offers);
         when(offerMapper.map(any(Offer.class))).thenReturn(dtoOffers.get(0), dtoOffers.get(1));
 
-        List<OfferDto> availableOffers = offerService.findAvailableOffers();
+        List<OfferDto> result = offerService.findAvailableOffers();
 
-        assertEquals(1, availableOffers.size());
-        assertEquals(dtoOffers.get(0), availableOffers.get(0));
-
+        assertEquals(1, result.size());
+        assertEquals(dtoOffers.get(0), result.get(0));
     }
 
     @Test
-    public void testFindSoldOffers() {
+    public void findSoldOffers_ShouldFindSoldOffers() {
         List<Offer> offers = createOfferList();
         List<OfferDto> dtoOffers = createDtoOfferList();
 
         when(offersRepository.findAll()).thenReturn(offers);
         when(offerMapper.map(any(Offer.class))).thenReturn(dtoOffers.get(0), dtoOffers.get(1));
 
-        List<OfferDto> soldOffers = offerService.findSoldOffers();
+        List<OfferDto> result = offerService.findSoldOffers();
 
-        assertEquals(1, soldOffers.size());
-        assertEquals(dtoOffers.get(0), soldOffers.get(0));
+        assertEquals(1, result.size());
+        assertEquals(dtoOffers.get(0), result.get(0));
     }
 
     @Test
-    public void testUpdateOffer() {
-        OfferDto dto = new OfferDto();
+    void updateOffer_OfferFound_ShouldUpdateOffer() {
+        Long id = 1L;
+        OfferDto updateDto = new OfferDto();
+        updateDto.setUserId(1L);
+        updateDto.setClientId(1L);
+        updateDto.setPropertyId(1L);
         Offer offer = new Offer();
 
-        when(offerMapper.map(dto)).thenReturn(offer);
+        when(offersRepository.findById(id)).thenReturn(Optional.of(offer));
+        doNothing().when(validationService).validateData(offer);
+        when(userRepository.findById(updateDto.getUserId())).thenReturn(Optional.of(new UserEmployee()));
+        when(clientRepository.findById(updateDto.getClientId())).thenReturn(Optional.of(new Client()));
+        when(propertyRepository.findById(updateDto.getPropertyId())).thenReturn(Optional.of(new Property()));
         when(offersRepository.save(offer)).thenReturn(offer);
 
-        offerService.updateOffer(dto);
+        assertDoesNotThrow(() -> offerService.updateOffer(id, updateDto));
 
+        verify(offersRepository, times(1)).findById(id);
+        verify(validationService, times(1)).validateData(offer);
         verify(offersRepository, times(1)).save(offer);
     }
 
     @Test
-    public void testDeleteOffer() {
+    void updateOffer_OfferNotFound_ShouldThrowResourceNotFoundException() {
+        Long id = 1L;
+
+        when(offersRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> offerService.updateOffer(id, new OfferDto()));
+
+        verify(offersRepository, times(1)).findById(id);
+        verifyNoInteractions(validationService);
+        verifyNoMoreInteractions(offersRepository);
+    }
+
+    @Test
+    public void deleteOffer_ShouldDeleteOffer() {
         Long offerId = 1L;
 
         offerService.deleteOffer(offerId);
@@ -171,7 +234,7 @@ class OfferServiceTest {
         OfferDto dto1 = new OfferDto();
         OfferDto dto2 = new OfferDto();
         dto1.setIsAvailable(true);
-        dto1.setIsAvailable(false);
+        dto2.setIsAvailable(false);
         dtos.add(dto1);
         dtos.add(dto2);
         return dtos;
@@ -187,5 +250,4 @@ class OfferServiceTest {
         offers.add(offer2);
         return offers;
     }
-
 }

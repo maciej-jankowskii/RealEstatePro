@@ -1,15 +1,22 @@
 package com.realestate.service;
 
 import com.realestate.dto.HousePropertyDto;
+import com.realestate.enums.BuildingType;
+import com.realestate.enums.Standard;
+import com.realestate.exceptions.ResourceNotFoundException;
 import com.realestate.mapper.HouseMapper;
 import com.realestate.model.Property.House;
 import com.realestate.repository.HouseRepository;
+import com.realestate.repository.OffersRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,8 +31,14 @@ class HouseServiceTest {
 
     @Mock
     private HouseRepository houseRepository;
+
     @Mock
     private HouseMapper houseMapper;
+    @Mock
+    private OffersRepository offersRepository;
+    @Mock
+    private ValidationService validationService;
+
     @InjectMocks
     private HouseService houseService;
 
@@ -35,22 +48,43 @@ class HouseServiceTest {
     }
 
     @Test
-    public void testSaveHouse() {
-        HousePropertyDto dto = new HousePropertyDto();
+    void saveHouse_ValidDto_ShouldSaveHouseAndReturnDto() {
+        HousePropertyDto inputDto = new HousePropertyDto();
         House house = new House();
+        House savedHouse = new House();
+        HousePropertyDto expectedDto = new HousePropertyDto();
 
-        when(houseMapper.map(dto)).thenReturn(house);
-        when(houseRepository.save(house)).thenReturn(house);
-        when(houseMapper.map(house)).thenReturn(dto);
+        when(houseMapper.map(inputDto)).thenReturn(house);
+        when(houseRepository.save(house)).thenReturn(savedHouse);
+        when(houseMapper.map(savedHouse)).thenReturn(expectedDto);
+        doNothing().when(validationService).validateData(any());
 
-        HousePropertyDto result = houseService.saveHouse(dto);
+        HousePropertyDto resultDto = houseService.saveHouse(inputDto);
 
-        assertNotNull(result);
-        assertEquals(dto, result);
+        assertNotNull(resultDto);
+        assertEquals(expectedDto, resultDto);
+        verify(houseMapper, times(1)).map(inputDto);
+        verify(houseRepository, times(1)).save(house);
+        verify(houseMapper, times(1)).map(savedHouse);
+        verify(validationService, times(1)).validateData(any());
     }
 
     @Test
-    public void testGetHouseById() {
+    void saveHouse_InvalidDto_ShouldThrowException() {
+        HousePropertyDto invalidDto = new HousePropertyDto();
+        invalidDto.setPrice(new BigDecimal(-1));
+
+        when(houseMapper.map(invalidDto)).thenReturn(new House());
+        doThrow(DataIntegrityViolationException.class).when(houseRepository).save(any());
+
+        assertThrows(DataIntegrityViolationException.class, () -> houseService.saveHouse(invalidDto));
+
+        verify(houseMapper, times(1)).map(invalidDto);
+        verify(houseRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void getHouseById_ShouldFindHouse() {
         HousePropertyDto dto = new HousePropertyDto();
         House house = new House();
         Long houseId = 1L;
@@ -58,77 +92,83 @@ class HouseServiceTest {
         when(houseRepository.findById(houseId)).thenReturn(Optional.of(house));
         when(houseMapper.map(house)).thenReturn(dto);
 
-        Optional<HousePropertyDto> result = houseService.getHouseById(houseId);
+        HousePropertyDto result = houseService.getHouseById(houseId);
 
-        assertTrue(result.isPresent());
-        assertEquals(dto, result.get());
-
+        assertNotNull(result);
+        assertEquals(dto, result);
     }
 
     @Test
-    public void testGetAllHouses() {
-        List<House> houses = new ArrayList<>();
-        houses.add(new House());
-        houses.add(new House());
-        List<HousePropertyDto> dtos = new ArrayList<>();
-        dtos.add(new HousePropertyDto());
-        dtos.add(new HousePropertyDto());
+    void getAllHouses_ShouldFindAllHouses() {
+        int page = 0;
+        int size = 10;
+        List<House> houseList = new ArrayList<>();
+        houseList.add(new House());
+        houseList.add(new House());
+        Page<House> housePage = new PageImpl<>(houseList);
+        when(houseRepository.findAll(any(Pageable.class))).thenReturn(housePage);
 
-        when(houseRepository.findAll()).thenReturn(houses);
-        when(houseMapper.map(any(House.class))).thenReturn(dtos.get(0), dtos.get(1));
+        List<HousePropertyDto> houseDtoList = new ArrayList<>();
+        houseDtoList.add(new HousePropertyDto());
+        houseDtoList.add(new HousePropertyDto());
+        when(houseMapper.map(any(House.class))).thenReturn(new HousePropertyDto());
 
-        List<HousePropertyDto> allHouses = houseService.getAllHouses();
+        List<HousePropertyDto> result = houseService.getAllHouses(page, size);
 
-        assertNotNull(allHouses);
-        assertEquals(dtos.size(), allHouses.size());
-
+        assertNotNull(result);
+        assertEquals(houseDtoList.size(), result.size());
+        verify(houseRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
-    public void testUpdateHouse() {
-        HousePropertyDto dto = new HousePropertyDto();
+    void updateHouse_HouseFound_ShouldUpdateHouse() {
+        Long id = 1L;
+        HousePropertyDto updateDto = new HousePropertyDto();
+        updateDto.setStandard(String.valueOf(Standard.GOOD_STANDARD));
+        updateDto.setBuildingType(String.valueOf(BuildingType.MULTI_FAMILY_HOUSE));
         House house = new House();
 
-        when(houseMapper.map(dto)).thenReturn(house);
+
+        when(houseRepository.findById(id)).thenReturn(Optional.of(house));
+        doNothing().when(validationService).validateData(house);
         when(houseRepository.save(house)).thenReturn(house);
 
-        houseService.updateHouse(dto);
+        assertDoesNotThrow(() -> houseService.updateHouse(id, updateDto));
 
+        verify(houseRepository, times(1)).findById(id);
+        verify(validationService, times(1)).validateData(house);
         verify(houseRepository, times(1)).save(house);
     }
 
     @Test
-    public void testDeleteHouse() {
-        Long houseId = 1L;
+    void updateHouse_HouseNotFound_ShouldThrowResourceNotFoundException() {
+        Long id = 1L;
 
+        when(houseRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> houseService.updateHouse(id, new HousePropertyDto()));
+
+        verify(houseRepository, times(1)).findById(id);
+        verifyNoInteractions(validationService);
+        verifyNoMoreInteractions(houseRepository);
+    }
+
+    @Test
+    public void deleteHouse_ShouldDelete() {
+        Long houseId = 1L;
+        when(houseRepository.findById(houseId)).thenReturn(Optional.of(new House()));
+        when(offersRepository.existsByPropertyId(houseId)).thenReturn(false);
         houseService.deleteHouse(houseId);
 
         verify(houseRepository, times(1)).deleteById(houseId);
     }
 
     @Test
-    public void testDeleteNoExistHouse(){
+    public void deleteHouse_ShouldNotFoundHouse(){
         Long houseId = 1L;
 
-        doThrow(new EmptyResultDataAccessException(1)).when(houseRepository).deleteById(houseId);
-        assertThrows(EmptyResultDataAccessException.class, () -> houseService.deleteHouse(houseId));
-    }
-
-    @Test
-    public void testFilterHouses() {
-        List<House> houses = new ArrayList<>();
-
-        when(houseRepository.findAll()).thenReturn(houses);
-
-        List<HousePropertyDto> dtos = houseService.filterHouses("Example", new BigDecimal("10000"), new BigDecimal("5000000"),
-                100.0, 900.0, 150.0, 220.0, 6, 3,
-                true, true, true, "SINGLE_FAMILY_HOUSE",
-                2000, "GOOD_STANDARD");
-
-        assertEquals(houses.size(), dtos.size());
-        assertNotNull(dtos);
-
-
+        doThrow(new ResourceNotFoundException("House not found")).when(houseRepository).deleteById(houseId);
+        assertThrows(ResourceNotFoundException.class, () -> houseService.deleteHouse(houseId));
     }
 
 }

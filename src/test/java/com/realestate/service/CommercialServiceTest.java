@@ -1,15 +1,23 @@
 package com.realestate.service;
 
 import com.realestate.dto.CommercialPropertyDto;
+import com.realestate.enums.BuildingType;
+import com.realestate.enums.TypeOfBusiness;
+import com.realestate.exceptions.ResourceNotFoundException;
 import com.realestate.mapper.CommercialMapper;
 import com.realestate.model.Property.CommercialProperty;
 import com.realestate.repository.CommercialRepository;
+import com.realestate.repository.OffersRepository;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,104 +30,149 @@ import static org.mockito.Mockito.*;
 
 class CommercialServiceTest {
 
-    @Mock private CommercialRepository commercialRepository;
-    @Mock private CommercialMapper commercialMapper;
-    @InjectMocks private CommercialService commercialService;
+    @Mock private CommercialRepository commercialPropertyRepository;
+    @Mock private CommercialMapper commercialPropertyMapper;
+    @Mock private ValidationService validationService;
+    @Mock private OffersRepository offersRepository;
+    @InjectMocks private CommercialService commercialPropertyService;
+
     @BeforeEach
     public void init(){
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testSaveCommercialProperty(){
-        CommercialPropertyDto dto = new CommercialPropertyDto();
+    void saveCommercialProperty_ValidDto_ShouldSavePropertyAndReturnDto() {
+        CommercialPropertyDto inputDto = new CommercialPropertyDto();
         CommercialProperty property = new CommercialProperty();
+        CommercialProperty savedProperty = new CommercialProperty();
+        CommercialPropertyDto expectedDto = new CommercialPropertyDto();
 
-        when(commercialMapper.map(dto)).thenReturn(property);
-        when(commercialRepository.save(property)).thenReturn(property);
-        when(commercialMapper.map(property)).thenReturn(dto);
+        when(commercialPropertyMapper.map(inputDto)).thenReturn(property);
+        when(commercialPropertyRepository.save(property)).thenReturn(savedProperty);
+        when(commercialPropertyMapper.map(savedProperty)).thenReturn(expectedDto);
+        doNothing().when(validationService).validateData(any());
 
-        CommercialPropertyDto result = commercialService.saveCommercialProperty(dto);
+        CommercialPropertyDto resultDto = commercialPropertyService.saveCommercialProperty(inputDto);
+
+        assertNotNull(resultDto);
+        assertEquals(expectedDto, resultDto);
+        verify(commercialPropertyMapper, times(1)).map(inputDto);
+        verify(commercialPropertyRepository, times(1)).save(property);
+        verify(commercialPropertyMapper, times(1)).map(savedProperty);
+        verify(validationService, times(1)).validateData(any());
+    }
+
+    @Test
+    void saveCommercialProperty_InvalidDto_ShouldThrowException() {
+        CommercialPropertyDto invalidDto = new CommercialPropertyDto();
+        invalidDto.setPrice(new BigDecimal(-1));
+
+        when(commercialPropertyMapper.map(invalidDto)).thenReturn(new CommercialProperty());
+        doThrow(DataIntegrityViolationException.class).when(commercialPropertyRepository).save(any());
+
+        assertThrows(DataIntegrityViolationException.class, () -> commercialPropertyService.saveCommercialProperty(invalidDto));
+
+        verify(commercialPropertyMapper, times(1)).map(invalidDto);
+        verify(commercialPropertyRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void getCommercialById_ShouldFindCommercial(){
+        CommercialProperty commercialProperty = new CommercialProperty();
+        CommercialPropertyDto dto = new CommercialPropertyDto();
+        Long propertyId = 1L;
+
+        when(commercialPropertyRepository.findById(propertyId)).thenReturn(Optional.of(commercialProperty));
+        when(commercialPropertyMapper.map(commercialProperty)).thenReturn(dto);
+
+        CommercialPropertyDto result = commercialPropertyService.getCommercialPropertyById(propertyId);
 
         assertNotNull(result);
         assertEquals(dto, result);
     }
 
     @Test
-    public void testGetCommercialById(){
+    void getAllCommercialProperties_ShouldFindAllCommercials() {
+        int page = 0;
+        int size = 5;
+        List<CommercialProperty> commercialPropertyList = new ArrayList<>();
+        commercialPropertyList.add(new CommercialProperty());
+        commercialPropertyList.add(new CommercialProperty());
+        Page<CommercialProperty> commercialPropertyPage = new PageImpl<>(commercialPropertyList);
+        when(commercialPropertyRepository.findAll(any(Pageable.class))).thenReturn(commercialPropertyPage);
+
+        List<CommercialPropertyDto> commercialPropertyDtoList = new ArrayList<>();
+        commercialPropertyDtoList.add(new CommercialPropertyDto());
+        commercialPropertyDtoList.add(new CommercialPropertyDto());
+        when(commercialPropertyMapper.map(any(CommercialProperty.class))).thenReturn(new CommercialPropertyDto());
+
+        List<CommercialPropertyDto> result = commercialPropertyService.getAllCommercialProperty(page, size);
+
+        assertNotNull(result);
+        assertEquals(commercialPropertyDtoList.size(), result.size());
+        verify(commercialPropertyRepository, times(1)).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void updateCommercialProperty_ValidDto_ShouldUpdateCommercialProperty() {
+        Long id = 1L;
+        CommercialPropertyDto updateDto = new CommercialPropertyDto();
+        updateDto.setTypeOfBusiness(String.valueOf(TypeOfBusiness.SERVICES));
+        updateDto.setBuildingType(String.valueOf(BuildingType.APARTMENT_BUILDING));
         CommercialProperty commercialProperty = new CommercialProperty();
-        CommercialPropertyDto dto = new CommercialPropertyDto();
-        Long propertyId = 1L;
 
-        when(commercialRepository.findById(propertyId)).thenReturn(Optional.of(commercialProperty));
-        when(commercialMapper.map(commercialProperty)).thenReturn(dto);
+        when(commercialPropertyRepository.findById(id)).thenReturn(Optional.of(commercialProperty));
 
-        Optional<CommercialPropertyDto> result = commercialService.getCommercialPropertyById(propertyId);
+        assertDoesNotThrow(() -> commercialPropertyService.updateCommercialProperty(id, updateDto));
 
-        assertTrue(result.isPresent());
-        assertEquals(dto, result.get());
+        verify(commercialPropertyRepository, times(1)).findById(id);
+        verify(validationService, times(1)).validateData(commercialProperty);
+        verify(commercialPropertyRepository, times(1)).save(commercialProperty);
     }
 
     @Test
-    public void testGetAllCommercialProperties(){
-        List<CommercialProperty> commercialProperties = new ArrayList<>();
-        commercialProperties.add(new CommercialProperty());
-        commercialProperties.add(new CommercialProperty());
-        List<CommercialPropertyDto> dtos = new ArrayList<>();
-        dtos.add(new CommercialPropertyDto());
-        dtos.add(new CommercialPropertyDto());
+    void updateCommercialProperty_InvalidDto_ShouldThrowValidationException() {
+        Long id = 1L;
+        CommercialPropertyDto updateDto = new CommercialPropertyDto();
+        CommercialProperty commercialProperty = new CommercialProperty();
 
-        when(commercialRepository.findAll()).thenReturn(commercialProperties);
-        when(commercialMapper.map(any(CommercialProperty.class))).thenReturn(dtos.get(0), dtos.get(1));
+        when(commercialPropertyRepository.findById(id)).thenReturn(Optional.of(commercialProperty));
+        doThrow(ConstraintViolationException.class).when(validationService).validateData(commercialProperty);
 
-        List<CommercialPropertyDto> allProperties = commercialService.getAllCommercialProperty();
-
-        assertNotNull(allProperties);
-        assertEquals(dtos.size(), allProperties.size());
+        assertThrows(ConstraintViolationException.class, () -> commercialPropertyService.updateCommercialProperty(id, updateDto));
+        verify(commercialPropertyRepository, times(1)).findById(id);
+        verify(validationService, times(1)).validateData(commercialProperty);
+        verifyNoMoreInteractions(commercialPropertyRepository);
+        verifyNoMoreInteractions(validationService);
     }
 
     @Test
-    public void testUpdateCommercialProperty(){
-        CommercialPropertyDto dto = new CommercialPropertyDto();
-        CommercialProperty property = new CommercialProperty();
+    void updateCommercialProperty_PropertyNotFound_ShouldThrowResourceNotFoundException() {
+        Long id = 1L;
+        CommercialPropertyDto updateDto = new CommercialPropertyDto();
 
-        when(commercialMapper.map(dto)).thenReturn(property);
-        when(commercialRepository.save(property)).thenReturn(property);
+        when(commercialPropertyRepository.findById(id)).thenReturn(Optional.empty());
 
-        commercialService.updateCommercialProperty(dto);
-
-        verify(commercialRepository, times(1)).save(property);
+        assertThrows(ResourceNotFoundException.class, () -> commercialPropertyService.updateCommercialProperty(id, updateDto));
+        verify(commercialPropertyRepository, times(1)).findById(id);
+        verifyNoInteractions(validationService);
+        verifyNoMoreInteractions(commercialPropertyRepository);
     }
+
+
 
     @Test
-    public void testDeleteCommercialProperty(){
-        Long propertyId = 1L;
+    void deleteCommercialProperty_PropertyNotFound_ShouldThrowResourceNotFoundException() {
+        Long id = 1L;
 
-        commercialService.deleteCommercialProperty(propertyId);
+        when(commercialPropertyRepository.findById(id)).thenReturn(Optional.empty());
 
-        verify(commercialRepository, times(1)).deleteById(propertyId);
+        assertThrows(ResourceNotFoundException.class, () -> commercialPropertyService.deleteCommercialProperty(id));
+
+        verify(commercialPropertyRepository, times(1)).findById(id);
+        verifyNoInteractions(offersRepository);
+        verifyNoMoreInteractions(commercialPropertyRepository);
     }
-
-    @Test
-    public void testDeleteNoExistingCommercialProperty(){
-        Long propertyId = 1L;
-
-        doThrow(new EmptyResultDataAccessException(1)).when(commercialRepository).deleteById(propertyId);
-        assertThrows(EmptyResultDataAccessException.class, () -> commercialService.deleteCommercialProperty(propertyId));
-    }
-
-    @Test
-    public void testFilterCommercialProperty(){
-        List<CommercialProperty> commercialProperties = new ArrayList<>();
-
-        when(commercialRepository.findAll()).thenReturn(commercialProperties);
-
-        List<CommercialPropertyDto> dtos = commercialService.filterCommercialProperties("Example", new BigDecimal("1000"), 50.0,
-                150.0, 4, 1, "SKYSCRAPER", 40, "SERVICES");
-
-        assertNotNull(dtos);
-        assertEquals(commercialProperties.size(), dtos.size());
-    }
-
 
 }

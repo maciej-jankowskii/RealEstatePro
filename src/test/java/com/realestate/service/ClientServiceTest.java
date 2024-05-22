@@ -1,16 +1,21 @@
 package com.realestate.service;
 
 import com.realestate.dto.ClientDto;
+import com.realestate.exceptions.CannotDeleteResourceException;
+import com.realestate.exceptions.ResourceNotFoundException;
 import com.realestate.mapper.ClientMapper;
 import com.realestate.model.client.Client;
+import com.realestate.model.offer.Offer;
 import com.realestate.repository.ClientRepository;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 
 import java.util.ArrayList;
@@ -27,6 +32,8 @@ class ClientServiceTest {
     private ClientRepository clientRepository;
     @Mock
     private ClientMapper clientMapper;
+    @Mock
+    private ValidationService validationService;
     @InjectMocks
     private ClientService clientService;
 
@@ -36,7 +43,7 @@ class ClientServiceTest {
     }
 
     @Test
-    public void testGetClientById() {
+    public void getClientById_ShouldFindClient() {
         Client client = new Client();
         ClientDto dto = new ClientDto();
         Long clientId = 1L;
@@ -44,77 +51,118 @@ class ClientServiceTest {
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
         when(clientMapper.map(client)).thenReturn(dto);
 
-        Optional<ClientDto> resultClient = clientService.getClientById(client.getId());
+        ClientDto resultClient = clientService.getClientById(clientId);
 
         assertNotNull(resultClient);
     }
 
     @Test
-    public void testClientNotFound() {
+    public void getClientById_ShouldNotFound() {
         Long clientId = 1L;
         when(clientRepository.findById(clientId)).thenReturn(Optional.empty());
-        Optional<ClientDto> result = clientService.getClientById(clientId);
-        assertEquals(Optional.empty(), result);
-
+        assertThrows(ResourceNotFoundException.class, () -> clientService.getClientById(clientId));
     }
 
     @Test
-    public void testGetAllClients() {
-        List<Client> clients = new ArrayList<>();
-        clients.add(new Client());
-        clients.add(new Client());
+    void getAllClients_ShouldFindAllClients() {
 
-        List<ClientDto> clientDtos = new ArrayList<>();
-        clientDtos.add(new ClientDto());
-        clientDtos.add(new ClientDto());
+        int page = 0;
+        int size = 5;
+        List<Client> clientList = new ArrayList<>();
+        clientList.add(new Client());
+        clientList.add(new Client());
+        Page<Client> clientPage = new PageImpl<>(clientList);
+        when(clientRepository.findAll(any(Pageable.class))).thenReturn(clientPage);
 
-        when(clientRepository.findAll()).thenReturn(clients);
-        when(clientMapper.map(any(Client.class))).thenReturn(clientDtos.get(0), clientDtos.get(1));
+        List<ClientDto> clientDtoList = new ArrayList<>();
+        clientDtoList.add(new ClientDto());
+        clientDtoList.add(new ClientDto());
+        when(clientMapper.map(any(Client.class))).thenReturn(new ClientDto());
 
-        List<ClientDto> allClients = clientService.getAllClients();
+        List<ClientDto> result = clientService.getAllClients(page, size);
 
-        assertEquals(clients.size(), allClients.size());
-        assertNotNull(allClients);
-    }
-
-    @Test
-    public void testSaveClient() {
-        ClientDto dto = new ClientDto();
-        Client client = new Client();
-
-        when(clientMapper.map(dto)).thenReturn(client);
-        when(clientRepository.save(client)).thenReturn(client);
-        when(clientMapper.map(client)).thenReturn(dto);
-
-        ClientDto result = clientService.saveClient(dto);
-
-        assertEquals(client.getId(), result.getId());
         assertNotNull(result);
-
+        assertEquals(clientDtoList.size(), result.size());
+        verify(clientRepository, times(1)).findAll(any(Pageable.class));
     }
 
     @Test
-    public void testUpdateClient() {
+    void saveClient_ValidDto_ShouldSaveClientAndReturnDto() {
+
+        ClientDto inputDto = new ClientDto();
+        Client client = new Client();
+        Client savedClient = new Client();
+        ClientDto expectedDto = new ClientDto();
+
+        when(clientMapper.map(inputDto)).thenReturn(client);
+        when(clientRepository.save(client)).thenReturn(savedClient);
+        when(clientMapper.map(savedClient)).thenReturn(expectedDto);
+        doNothing().when(validationService).validateData(any());
+
+        ClientDto resultDto = clientService.saveClient(inputDto);
+
+        assertNotNull(resultDto);
+        assertEquals(expectedDto, resultDto);
+        verify(clientMapper, times(1)).map(inputDto);
+        verify(clientRepository, times(1)).save(client);
+        verify(clientMapper, times(1)).map(savedClient);
+        verify(validationService, times(1)).validateData(any());
+    }
+
+    @Test
+    void saveClient_InvalidDto_ShouldThrowException() {
+        ClientDto invalidDto = new ClientDto();
+        invalidDto.setFirstName("");
+
+        when(clientMapper.map(invalidDto)).thenReturn(new Client());
+        doThrow(DataIntegrityViolationException.class).when(clientRepository).save(any());
+
+        assertThrows(DataIntegrityViolationException.class, () -> clientService.saveClient(invalidDto));
+
+        verify(clientMapper, times(1)).map(invalidDto);
+        verify(clientRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void updateClient_ShouldUpdate() {
         ClientDto dto = new ClientDto();
         Client client = new Client();
 
-        when(clientMapper.map(dto)).thenReturn(client);
+        when(clientRepository.findById(anyLong())).thenReturn(Optional.of(client));
         when(clientRepository.save(client)).thenReturn(client);
 
-        clientService.updateClient(dto);
+        clientService.updateClient(1L, dto);
 
         verify(clientRepository, times(1)).save(client);
 
     }
 
     @Test
-    public void testDeleteClient() {
+    public void deleteClient_ShouldDelete() {
         Long clientId = 1L;
+
+        Client client = new Client();
+        client.setOffers(new ArrayList<>());
+
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
+        doNothing().when(clientRepository).deleteById(clientId);
 
         clientService.deleteClient(clientId);
 
         verify(clientRepository, times(1)).deleteById(clientId);
-
     }
 
+    @Test
+    public void deleteClientWithOffers_ShouldNotDelete() {
+        Long clientId = 1L;
+
+        Client client = new Client();
+        client.getOffers().add(new Offer());
+
+        when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));
+
+        assertThrows(CannotDeleteResourceException.class, () -> clientService.deleteClient(clientId));
+
+        verify(clientRepository, never()).deleteById(clientId);
+    }
 }

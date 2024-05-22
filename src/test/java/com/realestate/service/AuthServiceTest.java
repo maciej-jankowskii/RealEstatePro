@@ -9,136 +9,106 @@ import com.realestate.model.user.Role;
 import com.realestate.model.user.UserEmployee;
 import com.realestate.repository.RoleRepository;
 import com.realestate.repository.UserRepository;
-import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
+import java.util.Collections;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
 class AuthServiceTest {
+
     @Mock
     private UserRepository userRepository;
+
     @Mock
     private RoleRepository roleRepository;
+
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
-    private AuthenticationManager authenticationManager;
-    @Mock
     private JWTGenerator jwtGenerator;
-    @Mock private Validator validator;
+
+    @Mock
+    private AuthenticationManager authenticationManager;
+
+    @Mock
+    private ValidationService validationService;
+
     @InjectMocks
     private AuthService authService;
 
     @BeforeEach
-    public void init() {
+    public void init(){
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void registerTest() {
-        RegisterDto dto = new RegisterDto();
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-        dto.setEmail("john@example.com");
-        dto.setPassword("password");
+    void registerUser_ValidDto_ShouldRegisterUser() {
 
-        Role role = new Role();
-        role.setRoleName("AGENT");
-
-        when(userRepository.existsByEmail(dto.getEmail())).thenReturn(false);
-        when(roleRepository.findByRoleName("AGENT")).thenReturn(Optional.of(role));
-
+        RegisterDto registerDto = new RegisterDto();
         UserEmployee user = new UserEmployee();
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        Role roleAgent = new Role();
+        roleAgent.setRoleName("AGENT");
+        user.setRoles(Collections.singletonList(roleAgent));
 
-        when(userRepository.save(Mockito.any(UserEmployee.class))).thenReturn(user);
+        when(userRepository.existsByEmail(registerDto.getEmail())).thenReturn(false);
+        when(roleRepository.findByRoleName("AGENT")).thenReturn(Optional.of(roleAgent));
+        when(passwordEncoder.encode(registerDto.getPassword())).thenReturn("encodedPassword");
 
-        String result = authService.registerUser(dto);
+        authService.registerUser(registerDto);
 
-        assertEquals("User registered successfully!", result);
-
+        verify(validationService, times(1)).validateData(registerDto);
+        verify(userRepository, times(1)).existsByEmail(registerDto.getEmail());
+        verify(passwordEncoder, times(1)).encode(registerDto.getPassword());
+        verify(userRepository, times(1)).save(any(UserEmployee.class));
     }
 
     @Test
-    public void testRegisterWithTakenEmail() {
-        RegisterDto dto = new RegisterDto();
-        dto.setFirstName("John");
-        dto.setLastName("Doe");
-        dto.setEmail("john@example.com");
-        dto.setPassword("password");
+    void registerUser_ExistingEmail_ShouldThrowRegistrationException() {
+        RegisterDto registerDto = new RegisterDto();
 
-        when(userRepository.existsByEmail(dto.getEmail())).thenReturn(true);
+        when(userRepository.existsByEmail(registerDto.getEmail())).thenReturn(true);
 
-        String result = authService.registerUser(dto);
-        assertEquals("Email is taken!", result);
-        verify(userRepository, never()).save(any(UserEmployee.class));
-
+        assertThrows(RegistrationException.class, () -> authService.registerUser(registerDto));
+        verify(userRepository, times(1)).existsByEmail(registerDto.getEmail());
+        verifyNoMoreInteractions(userRepository);
+        verifyNoInteractions(passwordEncoder);
     }
 
     @Test
-    public void testRegisterWithInvalidData() {
-        RegisterDto dto = new RegisterDto();
-        dto.setFirstName("");
-        dto.setLastName("Doe");
-        dto.setEmail("wrong email");
-        dto.setPassword("p");
+    void loginUser_ValidDto_ShouldReturnToken() {
+        LoginDto loginDto = new LoginDto();
+        Authentication authentication = mock(Authentication.class);
 
-        when(userRepository.existsByEmail(dto.getEmail())).thenReturn(false);
-        Role role = new Role();
-        role.setRoleName("AGENT");
-        when(roleRepository.findByRoleName(role.getRoleName())).thenReturn(Optional.of(role));
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+        when(jwtGenerator.generatedToken(authentication)).thenReturn("token");
 
-        try {
-            authService.registerUser(dto);
-        } catch (RegistrationException ex) {
-            assertEquals("Invalid user data", ex.getMessage());
-        }
+        String token = authService.loginUser(loginDto);
+
+        assertNotNull(token);
+        assertEquals("token", token);
+        verify(authenticationManager, times(1)).authenticate(any());
+        verify(jwtGenerator, times(1)).generatedToken(authentication);
+        verifyNoMoreInteractions(authenticationManager);
+        verifyNoMoreInteractions(jwtGenerator);
     }
 
     @Test
-    public void loginTest() {
-        LoginDto dto = new LoginDto();
-        dto.setEmail("john@example.com");
-        dto.setPassword("password");
+    void loginUser_InvalidDto_ShouldThrowUnauthorizedException() {
+        LoginDto loginDto = new LoginDto();
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
-        when(authenticationManager.authenticate(Mockito.any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
-        when(jwtGenerator.generatedToken(authentication)).thenReturn("secrettoken");
+        when(authenticationManager.authenticate(any())).thenThrow(new UnauthorizedException("Invalid data"));
 
-        String token = authService.loginUser(dto);
-
-        assertEquals("secrettoken", token);
-    }
-
-    @Test
-    public void testLoginWithInvalidData() {
-        LoginDto dto = new LoginDto();
-        dto.setEmail("john@example.com");
-        dto.setPassword("password");
-
-        when(authenticationManager.authenticate(any(Authentication.class))).thenThrow(new AuthenticationException("Invalid data") {
-        });
-
-        try {
-            authService.loginUser(dto);
-        } catch (UnauthorizedException e) {
-            assertEquals("Invalid data", e.getMessage());
-        }
+        assertThrows(UnauthorizedException.class, () -> authService.loginUser(loginDto));
+        verify(authenticationManager, times(1)).authenticate(any());
+        verifyNoInteractions(jwtGenerator);
     }
 }
