@@ -23,7 +23,8 @@ Download Postman from the official website. It is a tool that will allow you to 
 ```
 
 ## 3. Or use Swagger: 
-http://localhost:8080/swagger-ui/index.html#/
+<p><a href="http://localhost:8080/swagger-ui/index.html#/">Click here -> Swagger</a></p>
+
 
 ## 4. You can also use Docker for running it locally and testing:
 Coming soon
