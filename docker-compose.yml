@@ -1,4 +1,4 @@
-x-project-name: Estateese
+version: "3.9"
 services:
   mysql:
     image: mysql:8.0
@@ -6,15 +6,16 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: realestate
-    ports:
-      - "3306:3306"
+    #    ports:
+    #      - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    restart: always
+    networks:
+      - real-estate-network
 
   backend:
-    build:
-      context: ./PROJEKT KOŃCOWY REAL ESTATE
-      dockerfile: ./RealEstate/Dockerfile
+    image: maciejjankowskii/realestate:v1
     container_name: backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/realestate
@@ -24,16 +25,23 @@ services:
       - "8080:8080"
     depends_on:
       - mysql
+    restart: always
+    networks:
+      - real-estate-network
 
   frontend:
-    build:
-      context: ./PROJEKT KOŃCOWY FRONTEND REAL ESTATE
-      dockerfile: ./realestate/Dockerfile
+    image: maciejjankowskii/realestate-front:v1
     container_name: frontend
     ports:
-      - "3000:80"
+      - "3000:5173"
     depends_on:
       - backend
+    restart: always
+    networks:
+      - real-estate-network
 
 volumes:
   mysql-data:
+networks:
+  real-estate-network:
+    driver: bridge
